@@ -2,8 +2,8 @@ package com.toofifty.goaltracker;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Provides;
-import com.toofifty.goaltracker.goal.GoalSet;
 import com.toofifty.goaltracker.ui.GoalTrackerPanel;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.ItemID;
@@ -17,8 +17,6 @@ import net.runelite.client.ui.NavigationButton;
 
 import javax.inject.Inject;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 @PluginDescriptor(
@@ -37,11 +35,10 @@ public class GoalTrackerPlugin extends Plugin {
     @Inject
     private GoalTrackerConfig config;
 
-    private GoalSerializer goalSerializer;
+    @Getter
+    private GoalManager goalManager;
 
     private NavigationButton uiNavigationButton;
-
-    private List<GoalSet> goalSets;
 
     @Provides
     GoalTrackerConfig getConfig(ConfigManager configManager) {
@@ -50,16 +47,11 @@ public class GoalTrackerPlugin extends Plugin {
 
     @Override
     protected void startUp() throws Exception {
-        goalSerializer = new GoalSerializer();
-
-        try {
-            goalSets = goalSerializer.deserialize(config.goaltrackerData());
-        } catch (IllegalStateException e) {
-            goalSets = new ArrayList<>();
-        }
+        goalManager = new GoalManager(config);
+        goalManager.load();
 
         final BufferedImage icon = itemManager.getImage(ItemID.TODO_LIST);
-        final GoalTrackerPanel uiPanel = new GoalTrackerPanel(goalSets);
+        final GoalTrackerPanel uiPanel = new GoalTrackerPanel(this);
 
         uiNavigationButton = NavigationButton.builder()
                 .tooltip("Goal Tracker")
@@ -73,13 +65,13 @@ public class GoalTrackerPlugin extends Plugin {
 
     @Override
     protected void shutDown() throws Exception {
-        clientToolbar.removeNavigation(uiNavigationButton);
+        goalManager.save();
 
-        config.goaltrackerData(goalSerializer.serialize(goalSets));
+        clientToolbar.removeNavigation(uiNavigationButton);
     }
 
     @Subscribe
     public void onSessionOpen(SessionOpen event) {
-        goalSets = goalSerializer.deserialize(config.goaltrackerData());
+        goalManager.load();
     }
 }

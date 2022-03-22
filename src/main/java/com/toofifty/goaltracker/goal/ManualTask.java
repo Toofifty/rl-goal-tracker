@@ -5,7 +5,7 @@ import lombok.Setter;
 
 import java.awt.image.BufferedImage;
 
-public class ManualGoal extends AbstractGoal {
+public class ManualTask extends Task {
     @Setter
     private Boolean done = false;
 
@@ -15,6 +15,11 @@ public class ManualGoal extends AbstractGoal {
     @Override
     public String toString() {
         return description;
+    }
+
+    @Override
+    public TaskType getType() {
+        return TaskType.MANUAL;
     }
 
     @Override
@@ -28,9 +33,7 @@ public class ManualGoal extends AbstractGoal {
     }
 
     @Override
-    public JsonObject serialize() {
-        JsonObject json = new JsonObject();
-        json.addProperty("type", "manual");
+    public JsonObject addSerializedProperties(JsonObject json) {
         json.addProperty("done", done);
         json.addProperty("description", description);
         return json;

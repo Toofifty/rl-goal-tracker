@@ -7,18 +7,18 @@ import net.runelite.client.config.ConfigItem;
 @ConfigGroup("goaltracker")
 public interface GoalTrackerConfig extends Config {
     @ConfigItem(
-            keyName = "goaltrackerData",
+            keyName = "goalTrackerData",
             name = "",
             description = ""
     )
-    default String goaltrackerData() {
+    default String goalTrackerData() {
         return "";
     }
 
     @ConfigItem(
-            keyName = "goaltrackerData",
+            keyName = "goalTrackerData",
             name = "",
             description = ""
     )
-    void goaltrackerData(String str);
+    void goalTrackerData(String str);
 }

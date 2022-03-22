@@ -1,7 +1,6 @@
 package com.toofifty.goaltracker.ui;
 
 import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.FlatTextField;
 
 import javax.swing.*;
@@ -9,7 +8,9 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
 import java.util.function.Consumer;
 
 public class EditableInput extends JPanel {
@@ -19,9 +20,9 @@ public class EditableInput extends JPanel {
             BorderFactory.createLineBorder(ColorScheme.DARKER_GRAY_COLOR));
 
     private final FlatTextField inputField = new FlatTextField();
-    private final JLabel save = new JLabel("Save");
-    private final JLabel cancel = new JLabel("Cancel");
-    private final JLabel rename = new JLabel("Edit");
+    private final TextButton save = new TextButton("Save").narrow();
+    private final TextButton cancel = new TextButton("Cancel", ColorScheme.PROGRESS_ERROR_COLOR).narrow();
+    private final TextButton edit = new TextButton("Edit", ColorScheme.LIGHT_GRAY_COLOR).narrow();
 
     private Consumer<String> saveAction;
 
@@ -39,68 +40,19 @@ public class EditableInput extends JPanel {
         actions.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
         save.setVisible(false);
-        save.setFont(FontManager.getRunescapeSmallFont());
-        save.setForeground(ColorScheme.PROGRESS_COMPLETE_COLOR);
-        save.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                save();
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                save.setForeground(ColorScheme.PROGRESS_COMPLETE_COLOR.darker());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                save.setForeground(ColorScheme.PROGRESS_COMPLETE_COLOR);
-            }
-        });
+        save.onClick(e -> this.save());
 
         cancel.setVisible(false);
-        cancel.setFont(FontManager.getRunescapeSmallFont());
-        cancel.setForeground(ColorScheme.PROGRESS_ERROR_COLOR);
-        cancel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                cancel();
-            }
+        cancel.onClick(e -> this.cancel());
 
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                cancel.setForeground(ColorScheme.PROGRESS_ERROR_COLOR.darker());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                cancel.setForeground(ColorScheme.PROGRESS_ERROR_COLOR);
-            }
-        });
-
-        rename.setFont(FontManager.getRunescapeSmallFont());
-        rename.setForeground(ColorScheme.LIGHT_GRAY_COLOR.darker());
-        rename.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent mouseEvent) {
-                inputField.setEditable(true);
-                updateNameActions(true);
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                rename.setForeground(ColorScheme.LIGHT_GRAY_COLOR.darker().darker());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                rename.setForeground(ColorScheme.LIGHT_GRAY_COLOR.darker());
-            }
+        edit.onClick(e -> {
+            inputField.setEditable(true);
+            updateActions(true);
         });
 
         actions.add(save, BorderLayout.EAST);
         actions.add(cancel, BorderLayout.WEST);
-        actions.add(rename, BorderLayout.CENTER);
+        actions.add(edit, BorderLayout.CENTER);
 
         inputField.setText(localValue);
         inputField.setBorder(null);
@@ -139,7 +91,7 @@ public class EditableInput extends JPanel {
         saveAction.accept(localValue);
 
         inputField.setEditable(false);
-        updateNameActions(false);
+        updateActions(false);
         requestFocusInWindow();
     }
 
@@ -147,14 +99,14 @@ public class EditableInput extends JPanel {
         inputField.setEditable(false);
         inputField.setText(localValue);
 
-        updateNameActions(false);
+        updateActions(false);
         requestFocusInWindow();
     }
 
-    private void updateNameActions(boolean saveAndCancel) {
+    private void updateActions(boolean saveAndCancel) {
         save.setVisible(saveAndCancel);
         cancel.setVisible(saveAndCancel);
-        rename.setVisible(!saveAndCancel);
+        edit.setVisible(!saveAndCancel);
 
         if (saveAndCancel) {
             inputField.getTextField().requestFocusInWindow();

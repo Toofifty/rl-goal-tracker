@@ -1,7 +1,7 @@
 package com.toofifty.goaltracker.ui;
 
-import com.toofifty.goaltracker.goal.GoalSet;
-import com.toofifty.goaltracker.goal.ManualGoal;
+import com.toofifty.goaltracker.goal.Goal;
+import com.toofifty.goaltracker.goal.ManualTask;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.components.FlatTextField;
@@ -11,16 +11,14 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
-public class NewGoalPanel extends JPanel {
+public class NewTaskPanel extends JPanel {
     private Runnable update;
-    private GoalSet goalSet;
+    private Goal goal;
 
-    NewGoalPanel(GoalSet goalSet) {
+    NewTaskPanel(Goal goal) {
         super();
-        this.goalSet = goalSet;
+        this.goal = goal;
 
         setLayout(new GridBagLayout());
         setBorder(new EmptyBorder(8, 0, 8, 0));
@@ -36,10 +34,10 @@ public class NewGoalPanel extends JPanel {
         quickAddTitle.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
         quickAddTitle.setBorder(new EmptyBorder(8, 8, 0, 8));
 
-        JLabel customGoalTitle = new JLabel("Add smart goal");
-        customGoalTitle.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-        customGoalTitle.setFont(FontManager.getRunescapeSmallFont());
-        customGoalTitle.setBorder(new EmptyBorder(8, 8, 0, 8));
+        JLabel customTaskTitle = new JLabel("Add smart task");
+        customTaskTitle.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+        customTaskTitle.setFont(FontManager.getRunescapeSmallFont());
+        customTaskTitle.setBorder(new EmptyBorder(8, 8, 0, 8));
 
         add(new JPanel().add(quickAddTitle), constraints);
         constraints.gridy++;
@@ -59,30 +57,12 @@ public class NewGoalPanel extends JPanel {
                 }
             }
         });
-        JLabel quickAddButton = new JLabel("Add");
-        quickAddButton.setForeground(ColorScheme.PROGRESS_COMPLETE_COLOR);
-        quickAddButton.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        quickAddButton.setFont(FontManager.getRunescapeSmallFont());
-        quickAddButton.setToolTipText("You can also press enter");
-        quickAddButton.setBorder(new EmptyBorder(0, 8, 0, 8));
-        quickAddButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (quickAddDescription.getText().length() > 0) {
-                    addManualGoal(quickAddDescription.getText());
-                    quickAddDescription.setText("");
-                    quickAddDescription.requestFocusInWindow();
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                quickAddButton.setForeground(ColorScheme.PROGRESS_COMPLETE_COLOR.darker());
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                quickAddButton.setForeground(ColorScheme.PROGRESS_COMPLETE_COLOR);
+        TextButton quickAddButton = new TextButton("Add");
+        quickAddButton.onClick(e -> {
+            if (quickAddDescription.getText().length() > 0) {
+                addManualGoal(quickAddDescription.getText());
+                quickAddDescription.setText("");
+                quickAddDescription.requestFocusInWindow();
             }
         });
         quickAddRow.add(quickAddDescription, BorderLayout.CENTER);
@@ -91,7 +71,7 @@ public class NewGoalPanel extends JPanel {
         add(quickAddRow, constraints);
         constraints.gridy++;
 
-        add(customGoalTitle, constraints);
+        add(customTaskTitle, constraints);
         constraints.gridy++;
     }
 
@@ -100,9 +80,9 @@ public class NewGoalPanel extends JPanel {
     }
 
     private void addManualGoal(String description) {
-        ManualGoal goal = new ManualGoal();
+        ManualTask goal = new ManualTask();
         goal.setDescription(description);
-        goalSet.add(goal);
+        this.goal.add(goal);
         if (update != null) {
             SwingUtilities.invokeLater(() -> update.run());
         }
