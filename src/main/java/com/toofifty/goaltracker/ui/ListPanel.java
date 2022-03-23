@@ -30,7 +30,7 @@ public class ListPanel<T> extends JScrollPane {
         listPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
         wrapperPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        wrapperPanel.add(listPanel);
+        wrapperPanel.add(listPanel, BorderLayout.NORTH);
 
         setBorder(new EmptyBorder(4, 4, 4 - gap, 4));
         setBackground(ColorScheme.DARKER_GRAY_COLOR);
@@ -58,7 +58,7 @@ public class ListPanel<T> extends JScrollPane {
     public void rebuild() {
         listPanel.removeAll();
 
-        List<ListItemPanel> itemPanels = generateItemPanels();
+        List<ListItemPanel<T>> itemPanels = generateItemPanels();
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -67,10 +67,10 @@ public class ListPanel<T> extends JScrollPane {
         constraints.insets = new Insets(0, 0, gap, 0);
 
         if (itemPanels.isEmpty()) {
+            JLabel placeholderLabel = new JLabel(placeholder);
+            placeholderLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
             JPanel placeholderPanel = new JPanel();
-            placeholderPanel.add(new JLabel(placeholder));
-            placeholderPanel.setForeground(ColorScheme.MEDIUM_GRAY_COLOR.darker());
-            placeholderPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
+            placeholderPanel.add(placeholderLabel);
             listPanel.add(placeholderPanel, constraints);
         } else {
             itemPanels.forEach(component -> {
@@ -80,6 +80,8 @@ public class ListPanel<T> extends JScrollPane {
             });
         }
 
+        // relayout the parent in order to recalculate
+        // the height of the list
         if (getParent() != null) {
             getParent().revalidate();
         }
@@ -87,9 +89,9 @@ public class ListPanel<T> extends JScrollPane {
         revalidate();
     }
 
-    private List<ListItemPanel> generateItemPanels() {
+    private List<ListItemPanel<T>> generateItemPanels() {
         return list.getAll()
-                .stream().map(renderItem::apply)
+                .stream().map(renderItem)
                 .collect(Collectors.toList());
     }
 }

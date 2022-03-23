@@ -3,13 +3,14 @@ package com.toofifty.goaltracker.goal;
 import com.google.gson.JsonObject;
 import com.toofifty.goaltracker.goal.factory.ManualTaskFactory;
 import com.toofifty.goaltracker.goal.factory.TaskFactory;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.awt.image.BufferedImage;
 
 public abstract class Task {
-    public static Task factory() {
-        throw new NotImplementedException("No factory found");
+    private Goal goal;
+
+    public Task(Goal goal) {
+        this.goal = goal;
     }
 
     @Override
@@ -31,6 +32,10 @@ public abstract class Task {
 
     public Boolean hasIcon() {
         return this.getIcon() != null;
+    }
+
+    public void save() {
+        goal.save();
     }
 
     public enum TaskType {

@@ -24,7 +24,7 @@ public class GoalManager implements ReorderableList<Goal> {
 
     public void load() {
         try {
-            goals = goalSerializer.deserialize(config.goalTrackerData());
+            goals = goalSerializer.deserialize(this, config.goalTrackerData());
         } catch (IllegalStateException e) {
             goals = new ArrayList<>();
             throw e;
@@ -32,8 +32,8 @@ public class GoalManager implements ReorderableList<Goal> {
         System.out.println("Loaded " + goals.size() + " goals");
     }
 
-    public Goal create() {
-        Goal goal = new Goal();
+    public Goal createGoal() {
+        Goal goal = new Goal(this);
         add(goal);
         return goal;
     }

@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GoalSerializer {
-    public List<Goal> deserialize(String serialized) {
+    public List<Goal> deserialize(GoalManager goalManager, String serialized) {
         List<Goal> goals = new ArrayList<>();
         JsonArray json = new JsonParser().parse(serialized).getAsJsonArray();
         json.forEach((item) -> {
             JsonObject obj = item.getAsJsonObject();
-            goals.add(Goal.create(obj));
+            goals.add(Goal.create(goalManager, obj));
         });
 
         return goals;

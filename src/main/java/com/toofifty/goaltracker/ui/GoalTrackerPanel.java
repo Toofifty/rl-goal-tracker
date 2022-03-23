@@ -18,12 +18,13 @@ public class GoalTrackerPanel extends PluginPanel {
     private ListPanel<Goal> goalListPanel;
 
     public GoalTrackerPanel(GoalTrackerPlugin plugin) {
-        super();
+        super(false);
         this.plugin = plugin;
         GoalManager goalManager = plugin.getGoalManager();
 
         setBackground(ColorScheme.DARK_GRAY_COLOR);
         setLayout(new BorderLayout());
+        setBorder(new EmptyBorder(8, 8, 8, 8));
 
         JPanel titlePanel = new JPanel();
         titlePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -32,7 +33,7 @@ public class GoalTrackerPanel extends PluginPanel {
         titlePanel.add(
                 new TextButton(
                         "+ Add goal",
-                        e -> view(goalManager.create())
+                        e -> view(goalManager.createGoal())
                 ).narrow(),
                 BorderLayout.EAST
         );
@@ -52,23 +53,25 @@ public class GoalTrackerPanel extends PluginPanel {
         goalListPanel.setGap(0);
         goalListPanel.setPlaceholder("Add a new goal using the button above");
 
-        goalPanel.add(titlePanel);
-        goalPanel.add(goalListPanel, BorderLayout.SOUTH);
-        add(goalPanel);
+        goalPanel.add(titlePanel, BorderLayout.NORTH);
+        goalPanel.add(goalListPanel, BorderLayout.CENTER);
+        add(goalPanel, BorderLayout.CENTER);
     }
 
     public void home() {
         removeAll();
-        add(goalPanel);
+        add(goalPanel, BorderLayout.CENTER);
         goalListPanel.rebuild();
 
         revalidate();
+        repaint();
     }
 
     public void view(Goal goal) {
         removeAll();
-        add(new GoalPanel(goal, this::home));
+        add(new GoalPanel(goal, this::home), BorderLayout.CENTER);
 
         revalidate();
+        repaint();
     }
 }

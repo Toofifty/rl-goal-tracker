@@ -2,6 +2,7 @@ package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.toofifty.goaltracker.GoalManager;
 import com.toofifty.goaltracker.ReorderableList;
 import com.toofifty.goaltracker.goal.factory.TaskFactory;
 import lombok.Getter;
@@ -24,15 +25,21 @@ public class Goal implements ReorderableList<Task> {
     @Getter
     private List<Task> tasks = new ArrayList<>();
 
-    public static Goal create(JsonObject json) {
-        Goal goal = new Goal();
+    private GoalManager goalManager;
+
+    public Goal(GoalManager goalManager) {
+        this.goalManager = goalManager;
+    }
+
+    public static Goal create(GoalManager goalManager, JsonObject json) {
+        Goal goal = new Goal(goalManager);
         goal.setDescription(json.get("description").getAsString());
         goal.setDisplayOrder(json.get("display_order").getAsInt());
 
         json.get("items").getAsJsonArray().forEach(item -> {
             JsonObject obj = item.getAsJsonObject();
             TaskFactory factory = Task.TaskType.fromString(obj.get("type").getAsString()).getFactory();
-            goal.add(factory.create(obj));
+            goal.add(factory.create(goal, obj));
         });
 
         return goal;
@@ -68,6 +75,10 @@ public class Goal implements ReorderableList<Task> {
         return tasks.stream()
                 .filter(predicate)
                 .collect(Collectors.<Task>toList());
+    }
+
+    public void save() {
+        goalManager.save();
     }
 
     @Override

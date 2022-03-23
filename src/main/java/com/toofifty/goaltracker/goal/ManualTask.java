@@ -12,6 +12,14 @@ public class ManualTask extends Task {
     @Setter
     private String description;
 
+    public ManualTask(Goal goal) {
+        super(goal);
+    }
+
+    public void toggle() {
+        done = !done;
+    }
+
     @Override
     public String toString() {
         return description;

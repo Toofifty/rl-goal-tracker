@@ -1,14 +1,15 @@
 package com.toofifty.goaltracker.goal.factory;
 
 import com.google.gson.JsonObject;
+import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ManualTask;
 
 public class ManualTaskFactory extends TaskFactory {
     @Override
-    public ManualTask create(JsonObject json) {
-        ManualTask goal = new ManualTask();
-        goal.setDescription(json.get("description").getAsString());
-        goal.setDone(json.get("done").getAsBoolean());
-        return goal;
+    public ManualTask create(Goal goal, JsonObject json) {
+        ManualTask task = new ManualTask(goal);
+        task.setDescription(json.get("description").getAsString());
+        task.setDone(json.get("done").getAsBoolean());
+        return task;
     }
 }

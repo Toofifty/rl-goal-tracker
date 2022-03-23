@@ -21,7 +21,6 @@ public class NewTaskPanel extends JPanel {
         this.goal = goal;
 
         setLayout(new GridBagLayout());
-        setBorder(new EmptyBorder(8, 0, 8, 0));
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.weightx = 1;
@@ -32,12 +31,10 @@ public class NewTaskPanel extends JPanel {
         JLabel quickAddTitle = new JLabel("Quick add");
         quickAddTitle.setFont(FontManager.getRunescapeSmallFont());
         quickAddTitle.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-        quickAddTitle.setBorder(new EmptyBorder(8, 8, 0, 8));
+        quickAddTitle.setBorder(new EmptyBorder(4, 8, 0, 8));
 
-        JLabel customTaskTitle = new JLabel("Add smart task");
-        customTaskTitle.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-        customTaskTitle.setFont(FontManager.getRunescapeSmallFont());
-        customTaskTitle.setBorder(new EmptyBorder(8, 8, 0, 8));
+        TextButton moreOptionsButton = new TextButton("More options...");
+        moreOptionsButton.setBorder(new EmptyBorder(4, 8, 0, 8));
 
         add(new JPanel().add(quickAddTitle), constraints);
         constraints.gridy++;
@@ -71,7 +68,7 @@ public class NewTaskPanel extends JPanel {
         add(quickAddRow, constraints);
         constraints.gridy++;
 
-        add(customTaskTitle, constraints);
+        add(moreOptionsButton, constraints);
         constraints.gridy++;
     }
 
@@ -80,9 +77,9 @@ public class NewTaskPanel extends JPanel {
     }
 
     private void addManualGoal(String description) {
-        ManualTask goal = new ManualTask();
-        goal.setDescription(description);
-        this.goal.add(goal);
+        ManualTask task = new ManualTask(goal);
+        task.setDescription(description);
+        goal.add(task);
         if (update != null) {
             SwingUtilities.invokeLater(() -> update.run());
         }

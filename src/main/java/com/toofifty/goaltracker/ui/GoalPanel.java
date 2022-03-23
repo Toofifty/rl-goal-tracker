@@ -43,8 +43,8 @@ public class GoalPanel extends JPanel {
 
                     if (task.getType() == Task.TaskType.MANUAL) {
                         taskPanel.onClick(e -> {
-                            ManualTask manualTask = (ManualTask) task;
-                            manualTask.setDone(!manualTask.isComplete());
+                            ((ManualTask) task).toggle();
+                            task.save();
                             taskListPanel.rebuild();
                         });
                     }
