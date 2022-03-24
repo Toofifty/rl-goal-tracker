@@ -2,7 +2,8 @@ package com.toofifty.goaltracker;
 
 import java.util.List;
 
-public interface ReorderableList<T> {
+public interface ReorderableList<T>
+{
     List<T> getAll();
 
     void add(T item);

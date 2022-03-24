@@ -13,11 +13,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.util.function.Consumer;
 
-public class EditableInput extends JPanel {
+public class EditableInput extends JPanel
+{
 
     private static final Border INPUT_BOTTOM_BORDER = new CompoundBorder(
-            BorderFactory.createMatteBorder(0, 0, 1, 0, ColorScheme.DARK_GRAY_COLOR),
-            BorderFactory.createLineBorder(ColorScheme.DARKER_GRAY_COLOR));
+        BorderFactory.createMatteBorder(0, 0, 1, 0, ColorScheme.DARK_GRAY_COLOR),
+        BorderFactory.createLineBorder(ColorScheme.DARKER_GRAY_COLOR)
+    );
 
     private final FlatTextField inputField = new FlatTextField();
     private final TextButton save = new TextButton("Save").narrow();
@@ -28,7 +30,8 @@ public class EditableInput extends JPanel {
 
     private String localValue = "";
 
-    EditableInput(Consumer<String> saveAction) {
+    EditableInput(Consumer<String> saveAction)
+    {
         this.saveAction = saveAction;
 
         setLayout(new BorderLayout());
@@ -61,9 +64,11 @@ public class EditableInput extends JPanel {
         inputField.setPreferredSize(new Dimension(50, 24));
         inputField.getTextField().setForeground(Color.WHITE);
         inputField.getTextField().setBorder(new EmptyBorder(0, 8, 0, 0));
-        inputField.addKeyListener(new KeyAdapter() {
+        inputField.addKeyListener(new KeyAdapter()
+        {
             @Override
-            public void keyPressed(KeyEvent e) {
+            public void keyPressed(KeyEvent e)
+            {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     save();
                 } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -76,17 +81,8 @@ public class EditableInput extends JPanel {
         add(actions, BorderLayout.EAST);
     }
 
-    public void setValue(String value) {
-        localValue = value;
-
-        if (localValue == null) {
-            localValue = "";
-        }
-
-        inputField.setText(localValue);
-    }
-
-    private void save() {
+    private void save()
+    {
         localValue = inputField.getText();
         saveAction.accept(localValue);
 
@@ -95,7 +91,8 @@ public class EditableInput extends JPanel {
         requestFocusInWindow();
     }
 
-    private void cancel() {
+    private void cancel()
+    {
         inputField.setEditable(false);
         inputField.setText(localValue);
 
@@ -103,7 +100,8 @@ public class EditableInput extends JPanel {
         requestFocusInWindow();
     }
 
-    private void updateActions(boolean saveAndCancel) {
+    private void updateActions(boolean saveAndCancel)
+    {
         save.setVisible(saveAndCancel);
         cancel.setVisible(saveAndCancel);
         edit.setVisible(!saveAndCancel);
@@ -114,8 +112,20 @@ public class EditableInput extends JPanel {
         }
     }
 
+    public void setValue(String value)
+    {
+        localValue = value;
+
+        if (localValue == null) {
+            localValue = "";
+        }
+
+        inputField.setText(localValue);
+    }
+
     @Override
-    public synchronized void addMouseListener(MouseListener l) {
+    public synchronized void addMouseListener(MouseListener l)
+    {
         inputField.getTextField().addMouseListener(l);
     }
 }

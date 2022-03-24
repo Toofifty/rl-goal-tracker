@@ -6,23 +6,31 @@ import net.runelite.client.ui.ColorScheme;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ListPanel<T> extends JScrollPane {
-    private JPanel wrapperPanel = new JPanel(new BorderLayout());
-    private JPanel listPanel = new JPanel(new GridBagLayout());
+public class ListPanel<T> extends JScrollPane implements Refreshable
+{
+    private final JPanel wrapperPanel = new JPanel(new BorderLayout());
+    private final JPanel listPanel = new JPanel(new GridBagLayout());
 
-    private ReorderableList<T> list;
-    private Function<T, ListItemPanel<T>> renderItem;
+    private final ReorderableList<T> reorderableList;
+    private final Function<T, ListItemPanel<T>> renderItem;
+
+    private final Map<T, ListItemPanel<T>> itemPanelMap = new HashMap<>();
 
     private int gap = 2;
     private String placeholder = "Nothing interesting happens.";
 
-    ListPanel(ReorderableList<T> list, Function<T, ListItemPanel<T>> renderItem) {
+    ListPanel(
+        ReorderableList<T> reorderableList,
+        Function<T, ListItemPanel<T>> renderItem)
+    {
         super();
-        this.list = list;
+        this.reorderableList = reorderableList;
         this.renderItem = renderItem;
 
         setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -40,58 +48,115 @@ public class ListPanel<T> extends JScrollPane {
         setViewportView(wrapperPanel);
 
         setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
-
-        rebuild();
+        tryBuildList();
+        tryBuildPlaceholder();
     }
 
-    public void setGap(int gap) {
+    public void setGap(int gap)
+    {
         this.gap = gap;
         setBorder(new EmptyBorder(4, 4, 4 - gap, 4));
-        rebuild();
+        tryBuildList();
+        tryBuildPlaceholder();
     }
 
-    public void setPlaceholder(String placeholder) {
+    public void setPlaceholder(String placeholder)
+    {
         this.placeholder = placeholder;
-        rebuild();
+        tryBuildList();
+        tryBuildPlaceholder();
     }
 
-    public void rebuild() {
-        listPanel.removeAll();
+    private List<ListItemPanel<T>> buildItemPanels()
+    {
+        return reorderableList.getAll()
+            .stream()
+            .map(this::buildItemPanel)
+            .collect(Collectors.toList());
+    }
 
-        List<ListItemPanel<T>> itemPanels = generateItemPanels();
+    @Override
+    public void refresh()
+    {
+        // refresh all children
+        for (Component component : listPanel.getComponents()) {
+            if (component instanceof Refreshable) {
+                ((Refreshable) component).refresh();
+            }
+        }
+    }
 
+    private ListItemPanel<T> buildItemPanel(T item)
+    {
+        if (itemPanelMap.containsKey(item)) {
+            return itemPanelMap.get(item);
+        }
+
+        ListItemPanel<T> itemPanel = renderItem.apply(item);
+        itemPanel.setRunOnReorder(() -> {
+            tryBuildList();
+            tryBuildPlaceholder();
+        });
+
+        itemPanelMap.put(item, itemPanel);
+
+        return itemPanel;
+    }
+
+    private GridBagConstraints getConstraints()
+    {
+        return getConstraints(0);
+    }
+
+    private GridBagConstraints getConstraints(int gridy)
+    {
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.weightx = 1;
-        constraints.gridy = 0;
+        constraints.gridy = gridy;
+        constraints.gridx = 0;
         constraints.insets = new Insets(0, 0, gap, 0);
+        return constraints;
+    }
 
-        if (itemPanels.isEmpty()) {
+    private void refreshChildMenus()
+    {
+        for (Component component : listPanel.getComponents()) {
+            if (component instanceof ListItemPanel) {
+                ((ListItemPanel<?>) component).refreshMenu();
+            }
+        }
+    }
+
+    private void tryBuildPlaceholder()
+    {
+        if (reorderableList.getAll().isEmpty()) {
+            listPanel.removeAll();
+
             JLabel placeholderLabel = new JLabel(placeholder);
             placeholderLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
             JPanel placeholderPanel = new JPanel();
             placeholderPanel.add(placeholderLabel);
-            listPanel.add(placeholderPanel, constraints);
-        } else {
-            itemPanels.forEach(component -> {
-                listPanel.add(component, constraints);
-                component.onUpdate(this::rebuild);
-                constraints.gridy++;
-            });
+            listPanel.add(placeholderPanel, getConstraints());
         }
-
-        // relayout the parent in order to recalculate
-        // the height of the list
-        if (getParent() != null) {
-            getParent().revalidate();
-        }
-
-        revalidate();
     }
 
-    private List<ListItemPanel<T>> generateItemPanels() {
-        return list.getAll()
-                .stream().map(renderItem)
-                .collect(Collectors.toList());
+    /**
+     * Build the initial list, if items are provided
+     */
+    public void tryBuildList()
+    {
+        if (!reorderableList.getAll().isEmpty()) {
+            listPanel.removeAll();
+
+            GridBagConstraints constraints = getConstraints();
+            buildItemPanels().forEach(component -> {
+                listPanel.add(component, constraints);
+                constraints.gridy++;
+            });
+
+            refreshChildMenus();
+            revalidate();
+        }
     }
 }

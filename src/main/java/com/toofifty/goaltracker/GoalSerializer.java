@@ -8,8 +8,10 @@ import com.toofifty.goaltracker.goal.Goal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GoalSerializer {
-    public List<Goal> deserialize(GoalManager goalManager, String serialized) {
+public class GoalSerializer
+{
+    public List<Goal> deserialize(GoalManager goalManager, String serialized)
+    {
         List<Goal> goals = new ArrayList<>();
         JsonArray json = new JsonParser().parse(serialized).getAsJsonArray();
         json.forEach((item) -> {
@@ -20,7 +22,8 @@ public class GoalSerializer {
         return goals;
     }
 
-    public String serialize(List<Goal> goals) {
+    public String serialize(List<Goal> goals)
+    {
         JsonArray json = new JsonArray();
         goals.forEach((goal -> json.add(goal.serialize())));
 

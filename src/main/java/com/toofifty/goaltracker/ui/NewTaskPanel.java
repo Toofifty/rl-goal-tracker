@@ -1,26 +1,31 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.ManualTask;
+import com.toofifty.goaltracker.ui.inputs.ManualTaskInput;
+import com.toofifty.goaltracker.ui.inputs.QuestTaskInput;
+import com.toofifty.goaltracker.ui.inputs.SkillLevelTaskInput;
+import com.toofifty.goaltracker.ui.inputs.SkillXpTaskInput;
 import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.FontManager;
-import net.runelite.client.ui.components.FlatTextField;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
-public class NewTaskPanel extends JPanel {
-    private Runnable update;
+public class NewTaskPanel extends JPanel
+{
+    private Runnable updater;
+    private TextButton moreOptionsButton;
+    private JPanel moreOptionsPanel;
+
     private Goal goal;
 
-    NewTaskPanel(Goal goal) {
+    NewTaskPanel(Goal goal)
+    {
         super();
         this.goal = goal;
 
         setLayout(new GridBagLayout());
+
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.weightx = 1;
@@ -28,60 +33,68 @@ public class NewTaskPanel extends JPanel {
         constraints.gridy = 0;
         constraints.ipady = 8;
 
-        JLabel quickAddTitle = new JLabel("Quick add");
-        quickAddTitle.setFont(FontManager.getRunescapeSmallFont());
-        quickAddTitle.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-        quickAddTitle.setBorder(new EmptyBorder(4, 8, 0, 8));
+        add(new ManualTaskInput(goal).onUpdate(() -> updater.run()), constraints);
+        constraints.gridy++;
 
-        TextButton moreOptionsButton = new TextButton("More options...");
+        moreOptionsButton = new TextButton("+ More options");
         moreOptionsButton.setBorder(new EmptyBorder(4, 8, 0, 8));
-
-        add(new JPanel().add(quickAddTitle), constraints);
-        constraints.gridy++;
-
-        JPanel quickAddRow = new JPanel(new BorderLayout());
-        quickAddRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        FlatTextField quickAddDescription = new FlatTextField();
-        quickAddDescription.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        quickAddDescription.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER
-                        && quickAddDescription.getText().length() > 0) {
-                    addManualGoal(quickAddDescription.getText());
-                    quickAddDescription.setText("");
-                    quickAddDescription.requestFocusInWindow();
-                }
+        moreOptionsButton.onClick(e -> {
+            if (moreOptionsPanel.isVisible()) {
+                hideMoreOptions();
+            } else {
+                showMoreOptions();
             }
         });
-        TextButton quickAddButton = new TextButton("Add");
-        quickAddButton.onClick(e -> {
-            if (quickAddDescription.getText().length() > 0) {
-                addManualGoal(quickAddDescription.getText());
-                quickAddDescription.setText("");
-                quickAddDescription.requestFocusInWindow();
-            }
-        });
-        quickAddRow.add(quickAddDescription, BorderLayout.CENTER);
-        quickAddRow.add(quickAddButton, BorderLayout.EAST);
+        JPanel moreOptionsButtonPanel = new JPanel(new BorderLayout());
+        moreOptionsButtonPanel.add(moreOptionsButton, BorderLayout.WEST);
 
-        add(quickAddRow, constraints);
+        add(moreOptionsButtonPanel, constraints);
         constraints.gridy++;
 
-        add(moreOptionsButton, constraints);
+        createMoreOptionsPanel();
+        add(moreOptionsPanel, constraints);
+    }
+
+    private void hideMoreOptions()
+    {
+        moreOptionsButton.setText("+ More options");
+        moreOptionsButton.setMainColor(ColorScheme.PROGRESS_COMPLETE_COLOR);
+
+        moreOptionsPanel.setVisible(false);
+    }
+
+    private void showMoreOptions()
+    {
+        moreOptionsButton.setText("- More options");
+        moreOptionsButton.setMainColor(ColorScheme.PROGRESS_ERROR_COLOR);
+
+        moreOptionsPanel.setVisible(true);
+    }
+
+    private void createMoreOptionsPanel()
+    {
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 1;
+        constraints.gridwidth = 1;
+        constraints.gridy = 0;
+        constraints.ipady = 8;
+
+        moreOptionsPanel = new JPanel(new GridBagLayout());
+        moreOptionsPanel.setVisible(false);
+
+        moreOptionsPanel.add(new SkillLevelTaskInput(goal).onUpdate(() -> updater.run()), constraints);
+        constraints.gridy++;
+
+        moreOptionsPanel.add(new SkillXpTaskInput(goal).onUpdate(() -> updater.run()), constraints);
+        constraints.gridy++;
+
+        moreOptionsPanel.add(new QuestTaskInput(goal).onUpdate(() -> updater.run()), constraints);
         constraints.gridy++;
     }
 
-    public void onUpdate(Runnable update) {
-        this.update = update;
-    }
-
-    private void addManualGoal(String description) {
-        ManualTask task = new ManualTask(goal);
-        task.setDescription(description);
-        goal.add(task);
-        if (update != null) {
-            SwingUtilities.invokeLater(() -> update.run());
-        }
+    public void onUpdate(Runnable updater)
+    {
+        this.updater = updater;
     }
 }

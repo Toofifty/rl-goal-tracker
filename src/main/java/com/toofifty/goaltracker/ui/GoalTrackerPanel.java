@@ -11,13 +11,15 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-public class GoalTrackerPanel extends PluginPanel {
+public class GoalTrackerPanel extends PluginPanel implements Refreshable
+{
     private GoalTrackerPlugin plugin;
 
-    private JPanel goalPanel = new JPanel(new BorderLayout());
+    private JPanel mainPanel = new JPanel(new BorderLayout());
     private ListPanel<Goal> goalListPanel;
 
-    public GoalTrackerPanel(GoalTrackerPlugin plugin) {
+    public GoalTrackerPanel(GoalTrackerPlugin plugin)
+    {
         super(false);
         this.plugin = plugin;
         GoalManager goalManager = plugin.getGoalManager();
@@ -31,12 +33,9 @@ public class GoalTrackerPanel extends PluginPanel {
         titlePanel.setLayout(new BorderLayout());
 
         titlePanel.add(
-                new TextButton(
-                        "+ Add goal",
-                        e -> view(goalManager.createGoal())
-                ).narrow(),
-                BorderLayout.EAST
-        );
+            new TextButton("+ Add goal",
+                e -> view(goalManager.createGoal())
+            ).narrow(), BorderLayout.EAST);
 
         JLabel title = new JLabel();
         title.setText("Goal Tracker");
@@ -44,34 +43,51 @@ public class GoalTrackerPanel extends PluginPanel {
         title.setFont(FontManager.getRunescapeBoldFont());
         titlePanel.add(title, BorderLayout.WEST);
 
-        goalListPanel = new ListPanel<>(
-                goalManager,
-                (goal) -> new ListItemPanel<>(goalManager, goal)
-                        .onClick(e -> this.view(goal))
-                        .add(new GoalItemContent(goal))
+        goalListPanel = new ListPanel<>(goalManager,
+            (goal) -> new ListItemPanel<>(
+                goalManager, goal).onClick(e -> this.view(goal))
+                .add(new GoalItemContent(plugin, goal))
         );
         goalListPanel.setGap(0);
         goalListPanel.setPlaceholder("Add a new goal using the button above");
 
-        goalPanel.add(titlePanel, BorderLayout.NORTH);
-        goalPanel.add(goalListPanel, BorderLayout.CENTER);
-        add(goalPanel, BorderLayout.CENTER);
+        mainPanel.add(titlePanel, BorderLayout.NORTH);
+        mainPanel.add(goalListPanel, BorderLayout.CENTER);
+
+        home();
     }
 
-    public void home() {
+    public void view(Goal goal)
+    {
         removeAll();
+        GoalPanel goalPanel = new GoalPanel(plugin, goal, this::home);
         add(goalPanel, BorderLayout.CENTER);
-        goalListPanel.rebuild();
+        goalPanel.refresh();
 
         revalidate();
         repaint();
     }
 
-    public void view(Goal goal) {
+    public void home()
+    {
         removeAll();
-        add(new GoalPanel(goal, this::home), BorderLayout.CENTER);
+        add(mainPanel, BorderLayout.CENTER);
+        goalListPanel.refresh();
 
         revalidate();
         repaint();
+    }
+
+    @Override
+    public void refresh()
+    {
+        // refresh single-view goal
+        for (Component component : getComponents()) {
+            if (component instanceof Refreshable) {
+                ((Refreshable) component).refresh();
+            }
+        }
+
+        goalListPanel.refresh();
     }
 }
