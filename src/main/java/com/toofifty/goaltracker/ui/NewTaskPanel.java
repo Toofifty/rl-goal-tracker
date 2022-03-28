@@ -1,7 +1,11 @@
 package com.toofifty.goaltracker.ui;
 
+import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.ui.inputs.*;
+import com.toofifty.goaltracker.ui.inputs.ManualTaskInput;
+import com.toofifty.goaltracker.ui.inputs.QuestTaskInput;
+import com.toofifty.goaltracker.ui.inputs.SkillLevelTaskInput;
+import com.toofifty.goaltracker.ui.inputs.SkillXpTaskInput;
 import net.runelite.client.ui.ColorScheme;
 
 import javax.swing.*;
@@ -10,15 +14,17 @@ import java.awt.*;
 
 public class NewTaskPanel extends JPanel
 {
+    private final GoalTrackerPlugin plugin;
+    private final Goal goal;
+
     private Runnable updater;
     private TextButton moreOptionsButton;
     private JPanel moreOptionsPanel;
 
-    private Goal goal;
-
-    NewTaskPanel(Goal goal)
+    NewTaskPanel(GoalTrackerPlugin plugin, Goal goal)
     {
         super();
+        this.plugin = plugin;
         this.goal = goal;
 
         setLayout(new GridBagLayout());
@@ -31,7 +37,7 @@ public class NewTaskPanel extends JPanel
         constraints.ipady = 8;
 
         add(
-            new ManualTaskInput(goal).onUpdate(() -> updater.run()),
+            new ManualTaskInput(plugin, goal).onUpdate(() -> updater.run()),
             constraints
         );
         constraints.gridy++;
@@ -84,26 +90,28 @@ public class NewTaskPanel extends JPanel
         moreOptionsPanel.setVisible(false);
 
         moreOptionsPanel.add(
-            new SkillLevelTaskInput(goal).onUpdate(() -> updater.run()),
+            new SkillLevelTaskInput(plugin, goal).onUpdate(() -> updater.run()),
             constraints
         );
         constraints.gridy++;
 
         moreOptionsPanel.add(
-            new SkillXpTaskInput(goal).onUpdate(() -> updater.run()),
+            new SkillXpTaskInput(plugin, goal).onUpdate(() -> updater.run()),
             constraints
         );
         constraints.gridy++;
 
         moreOptionsPanel.add(
-            new QuestTaskInput(goal).onUpdate(() -> updater.run()),
+            new QuestTaskInput(plugin, goal).onUpdate(() -> updater.run()),
             constraints
         );
         constraints.gridy++;
-
-        moreOptionsPanel.add(
-            new ItemTaskInput(goal).onUpdate(() -> updater.run()), constraints);
-        constraints.gridy++;
+        //
+        //        moreOptionsPanel.add(
+        //            new ItemTaskInput(plugin, goal).onUpdate(() -> updater.run()),
+        //            constraints
+        //        );
+        //        constraints.gridy++;
     }
 
     public void onUpdate(Runnable updater)

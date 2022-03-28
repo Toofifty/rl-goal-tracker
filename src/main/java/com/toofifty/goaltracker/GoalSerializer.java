@@ -1,23 +1,34 @@
 package com.toofifty.goaltracker;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.toofifty.goaltracker.goal.Goal;
+import com.toofifty.goaltracker.goal.factory.GoalFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class GoalSerializer
 {
-    public List<Goal> deserialize(GoalManager goalManager, String serialized)
+    private final GoalFactory goalFactory;
+
+    GoalSerializer(GoalTrackerPlugin plugin)
+    {
+        goalFactory = new GoalFactory(plugin);
+    }
+
+    public List<Goal> deserialize(
+        GoalManager goalManager, String serialized) throws Exception
     {
         List<Goal> goals = new ArrayList<>();
         JsonArray json = new JsonParser().parse(serialized).getAsJsonArray();
-        json.forEach((item) -> {
+
+        for (JsonElement item : json) {
             JsonObject obj = item.getAsJsonObject();
-            goals.add(Goal.create(goalManager, obj));
-        });
+            goals.add(goalFactory.create(goalManager, obj));
+        }
 
         return goals;
     }

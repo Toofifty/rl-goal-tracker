@@ -14,11 +14,12 @@ public class GoalManager implements ReorderableList<Goal>
 
     private GoalTrackerConfig config;
 
-    private GoalSerializer goalSerializer = new GoalSerializer();
+    private GoalSerializer goalSerializer;
 
-    public GoalManager(GoalTrackerConfig config)
+    public GoalManager(GoalTrackerPlugin plugin)
     {
-        this.config = config;
+        config = plugin.getConfig();
+        goalSerializer = new GoalSerializer(plugin);
     }
 
     public void save()
@@ -32,10 +33,10 @@ public class GoalManager implements ReorderableList<Goal>
     {
         try {
             goals = goalSerializer.deserialize(this, config.goalTrackerData());
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             goals = new ArrayList<>();
-            throw e;
         }
+
         System.out.println("Loaded " + goals.size() + " goals");
     }
 
@@ -64,7 +65,7 @@ public class GoalManager implements ReorderableList<Goal>
         List<T> tasks = new ArrayList<>();
         for (Goal goal : goals) {
             for (Task task : goal.getAll()) {
-                if (!task.getPreviousResult() && task.getType() == type) {
+                if (!task.getResult() && task.getType() == type) {
                     tasks.add((T) task);
                 }
             }

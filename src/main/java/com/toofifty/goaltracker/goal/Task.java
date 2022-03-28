@@ -3,21 +3,18 @@ package com.toofifty.goaltracker.goal;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
 
 import java.awt.image.BufferedImage;
 
 public abstract class Task
 {
-    @Getter
-    private Goal goal;
-
     @Setter
     @Getter
-    private Boolean previousResult = false;
+    protected Boolean result = false;
 
-    private Boolean hasBeenNotified = false;
+    @Getter
+    private Goal goal;
+    private boolean hasBeenNotified = false;
 
     public Task(Goal goal)
     {
@@ -29,26 +26,15 @@ public abstract class Task
         this.hasBeenNotified = hasBeenNotified;
     }
 
-    public Boolean hasBeenNotified()
+    public boolean hasBeenNotified()
     {
         return hasBeenNotified;
     }
 
-    public Boolean checkSafe(Client client)
+    public boolean check()
     {
-        if (client.getGameState() == GameState.LOGGED_IN && (!requiresClientThread() || client
-            .isClientThread())) {
-            setPreviousResult(check(client));
-        }
-        return previousResult;
+        return result;
     }
-
-    protected Boolean requiresClientThread()
-    {
-        return false;
-    }
-
-    abstract public Boolean check(Client client);
 
     @Override
     abstract public String toString();
@@ -57,7 +43,7 @@ public abstract class Task
     {
         JsonObject json = new JsonObject();
         json.addProperty("type", getType().getName());
-        json.addProperty("previous_result", previousResult);
+        json.addProperty("previous_result", result);
         json.addProperty("has_been_notified", hasBeenNotified);
         return addSerializedProperties(json);
     }
@@ -66,7 +52,7 @@ public abstract class Task
 
     abstract protected JsonObject addSerializedProperties(JsonObject json);
 
-    public Boolean hasIcon()
+    public boolean hasIcon()
     {
         return this.getIcon() != null;
     }

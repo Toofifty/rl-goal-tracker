@@ -1,5 +1,6 @@
 package com.toofifty.goaltracker.ui.inputs;
 
+import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.ui.TextButton;
 import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
@@ -12,15 +13,16 @@ import java.awt.*;
 public abstract class TaskInput extends JPanel
 {
     protected final int PREFERRED_INPUT_HEIGHT = 16;
-
+    protected GoalTrackerPlugin plugin;
     @Getter
     private Runnable updater;
     @Getter
     private JPanel inputRow;
 
-    TaskInput(String title)
+    TaskInput(GoalTrackerPlugin plugin, String title)
     {
         super(new GridBagLayout());
+        this.plugin = plugin;
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;

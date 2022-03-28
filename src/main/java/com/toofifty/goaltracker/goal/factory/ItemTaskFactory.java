@@ -1,25 +1,34 @@
 package com.toofifty.goaltracker.goal.factory;
 
 import com.google.gson.JsonObject;
-import com.google.inject.Guice;
+import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ItemTask;
-import com.toofifty.goaltracker.goal.Task;
 import net.runelite.api.ItemComposition;
-import net.runelite.client.game.ItemManager;
 
 public class ItemTaskFactory extends TaskFactory
 {
-    @Override
-    protected Task createObject(
-        Goal goal, JsonObject json)
+    public ItemTaskFactory(
+        GoalTrackerPlugin plugin, Goal goal)
     {
-        ItemTask task = new ItemTask(goal);
-        ItemComposition item = Guice.createInjector().getInstance(
-            ItemManager.class).getItemComposition(
-            json.get("item_id").getAsInt());
+        super(plugin, goal);
+    }
+
+    @Override
+    protected ItemTask createObjectFromJson(JsonObject json)
+    {
+        return create(
+            json.get("item_id").getAsInt(), json.get("amount").getAsInt());
+    }
+
+    public ItemTask create(int itemId, int amount)
+    {
+        ItemTask task = new ItemTask(
+            plugin.getClient(), plugin.getItemManager(), goal);
+        ItemComposition item = plugin.getItemManager().getItemComposition(
+            itemId);
         task.setItem(item);
-        task.setAmount(json.get("amount").getAsInt());
-        return null;
+        task.setAmount(amount);
+        return task;
     }
 }

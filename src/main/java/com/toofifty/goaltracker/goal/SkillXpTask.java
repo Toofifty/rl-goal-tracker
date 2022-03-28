@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.client.game.SkillIconManager;
 
@@ -11,22 +12,33 @@ import java.awt.image.BufferedImage;
 
 public class SkillXpTask extends Task
 {
+    private final Client client;
+    private final SkillIconManager skillIconManager;
+
     @Getter
     @Setter
     private Skill skill;
+
     @Getter
     @Setter
     private int xp;
 
-    public SkillXpTask(Goal goal)
+    public SkillXpTask(
+        Client client, SkillIconManager skillIconManager, Goal goal)
     {
         super(goal);
+        this.client = client;
+        this.skillIconManager = skillIconManager;
     }
 
     @Override
-    public Boolean check(Client client)
+    public boolean check()
     {
-        return client.getSkillExperience(skill) >= xp;
+        if (client.getGameState() != GameState.LOGGED_IN) {
+            return result;
+        }
+
+        return result = client.getSkillExperience(skill) >= xp;
     }
 
     @Override
@@ -52,6 +64,6 @@ public class SkillXpTask extends Task
     @Override
     public BufferedImage getIcon()
     {
-        return new SkillIconManager().getSkillImage(skill);
+        return skillIconManager.getSkillImage(skill);
     }
 }

@@ -1,7 +1,6 @@
 package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
-import com.google.inject.Guice;
 import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.ItemComposition;
@@ -11,19 +10,25 @@ import java.awt.image.BufferedImage;
 
 public class ItemTask extends Task
 {
+    private final Client client;
+    private final ItemManager itemManager;
+
     @Setter
     private int amount;
 
     @Setter
     private ItemComposition item;
 
-    public ItemTask(Goal goal)
+    public ItemTask(
+        Client client, ItemManager itemManager, Goal goal)
     {
         super(goal);
+        this.client = client;
+        this.itemManager = itemManager;
     }
 
     @Override
-    public Boolean check(Client client)
+    public boolean check()
     {
         return false;
     }
@@ -52,8 +57,6 @@ public class ItemTask extends Task
     @Override
     public BufferedImage getIcon()
     {
-        ItemManager itemManager = Guice.createInjector().getInstance(
-            ItemManager.class);
         return itemManager.getImage(item.getId());
     }
 }

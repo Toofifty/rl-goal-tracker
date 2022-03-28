@@ -2,7 +2,6 @@ package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
 import lombok.Setter;
-import net.runelite.api.Client;
 
 import java.awt.image.BufferedImage;
 
@@ -25,16 +24,9 @@ public class ManualTask extends Task
     }
 
     @Override
-    public Boolean checkSafe(Client client)
+    public boolean check()
     {
-        // no reason to safeguard this check
-        return done;
-    }
-
-    @Override
-    public Boolean check(Client client)
-    {
-        return done;
+        return result = done;
     }
 
     @Override

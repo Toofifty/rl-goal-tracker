@@ -21,6 +21,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.SessionOpen;
 import net.runelite.client.game.ItemManager;
+import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
@@ -39,6 +40,11 @@ public class GoalTrackerPlugin extends Plugin
     @Inject
     private Client client;
 
+    @Getter
+    @Inject
+    private SkillIconManager skillIconManager;
+
+    @Getter
     @Inject
     private ItemManager itemManager;
 
@@ -48,6 +54,7 @@ public class GoalTrackerPlugin extends Plugin
     @Inject
     private ChatMessageManager chatMessageManager;
 
+    @Getter
     @Inject
     private GoalTrackerConfig config;
 
@@ -62,7 +69,7 @@ public class GoalTrackerPlugin extends Plugin
     private boolean validateAll = true;
 
     @Provides
-    GoalTrackerConfig getConfig(ConfigManager configManager)
+    GoalTrackerConfig getGoalTrackerConfig(ConfigManager configManager)
     {
         return configManager.getConfig(GoalTrackerConfig.class);
     }
@@ -70,18 +77,15 @@ public class GoalTrackerPlugin extends Plugin
     @Override
     protected void startUp() throws Exception
     {
-        goalManager = new GoalManager(config);
+        goalManager = new GoalManager(this);
         goalManager.load();
 
         final BufferedImage icon = itemManager.getImage(ItemID.TODO_LIST);
         goalTrackerPanel = new GoalTrackerPanel(this);
 
-        uiNavigationButton = NavigationButton.builder()
-            .tooltip("Goal Tracker")
-            .icon(icon)
-            .priority(7)
-            .panel(goalTrackerPanel)
-            .build();
+        uiNavigationButton = NavigationButton.builder().tooltip("Goal Tracker")
+                                             .icon(icon).priority(7).panel(
+                goalTrackerPanel).build();
 
         clientToolbar.addNavigation(uiNavigationButton);
     }
@@ -103,19 +107,21 @@ public class GoalTrackerPlugin extends Plugin
     @Subscribe
     public void onStatChanged(StatChanged event)
     {
-        List<SkillLevelTask> skillLevelTasks = goalManager.getAllIncompleteTasksOfType(
-            TaskType.SKILL_LEVEL);
+        List<SkillLevelTask> skillLevelTasks = goalManager
+            .getAllIncompleteTasksOfType(TaskType.SKILL_LEVEL);
         for (SkillLevelTask task : skillLevelTasks) {
-            if (event.getSkill() == task.getSkill() && event.getLevel() >= task.getLevel()) {
+            if (event.getSkill() == task.getSkill() && event.getLevel() >= task
+                .getLevel()) {
                 notifyTask(task);
                 TaskUIStatusManager.getInstance().refresh(task);
             }
         }
 
-        List<SkillXpTask> skillXpTasks = goalManager.getAllIncompleteTasksOfType(
-            TaskType.SKILL_XP);
+        List<SkillXpTask> skillXpTasks = goalManager
+            .getAllIncompleteTasksOfType(TaskType.SKILL_XP);
         for (SkillXpTask task : skillXpTasks) {
-            if (event.getSkill() == task.getSkill() && event.getXp() >= task.getXp()) {
+            if (event.getSkill() == task.getSkill() && event.getXp() >= task
+                .getXp()) {
                 notifyTask(task);
                 TaskUIStatusManager.getInstance().refresh(task);
             }
@@ -124,21 +130,23 @@ public class GoalTrackerPlugin extends Plugin
 
     public void notifyTask(Task task)
     {
-        if (client.getGameState() != GameState.LOGGED_IN || task.hasBeenNotified()) {
+        if (client.getGameState() != GameState.LOGGED_IN || task
+            .hasBeenNotified()) {
             return;
         }
 
         System.out.println(
-            "Notify: " + "[Goal Tracker] You have completed a task: " + task.toString() + "!");
+            "Notify: " + "[Goal Tracker] You have completed a task: " + task
+                .toString() + "!");
 
-        String message = "[Goal Tracker] You have completed a task: " + task.toString() + "!";
+        String message = "[Goal Tracker] You have completed a task: " + task
+            .toString() + "!";
         String formattedMessage = new ChatMessageBuilder().append(
             ColorScheme.PROGRESS_COMPLETE_COLOR, message).build();
-        chatMessageManager.queue(QueuedMessage.builder()
-            .type(ChatMessageType.CONSOLE)
-            .name("Goal Tracker")
-            .runeLiteFormattedMessage(formattedMessage)
-            .build());
+        chatMessageManager.queue(QueuedMessage.builder().type(
+            ChatMessageType.CONSOLE).name("Goal Tracker")
+                                              .runeLiteFormattedMessage(
+                                                  formattedMessage).build());
 
         task.hasBeenNotified(true);
     }
@@ -170,12 +178,13 @@ public class GoalTrackerPlugin extends Plugin
     {
         // attempt to refresh
         if (event.getType() == ChatMessageType.GAMEMESSAGE && event.getMessage()
-            .contains("Quest complete")) {
+                                                                   .contains(
+                                                                       "Quest complete")) {
 
-            List<QuestTask> questTasks = goalManager.getAllIncompleteTasksOfType(
-                TaskType.QUEST);
+            List<QuestTask> questTasks = goalManager
+                .getAllIncompleteTasksOfType(TaskType.QUEST);
             for (QuestTask task : questTasks) {
-                if (task.check(client)) {
+                if (task.check()) {
                     notifyTask(task);
                     TaskUIStatusManager.getInstance().refresh(task);
                 }

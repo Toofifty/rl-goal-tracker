@@ -5,6 +5,7 @@ import com.toofifty.goaltracker.GoalTrackerPlugin;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
 import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 import net.runelite.client.util.ImageUtil;
@@ -20,28 +21,27 @@ public class QuestTask extends Task
             GoalTrackerPlugin.class, "/quest_icon.png");
     }
 
+    private final Client client;
+
     @Getter
     @Setter
     private Quest quest;
 
-    public QuestTask(Goal goal)
+    public QuestTask(Client client, Goal goal)
     {
         super(goal);
+        this.client = client;
     }
 
     @Override
-    protected Boolean requiresClientThread()
+    public boolean check()
     {
-        return true;
-    }
+        if (client.getGameState() != GameState.LOGGED_IN || !client
+            .isClientThread()) {
+            return result;
+        }
 
-    @Override
-    public Boolean check(Client client)
-    {
-        System.out.println(
-            "Checking QUEST task: " + quest.getName() + " state: " + quest.getState(
-                client));
-        return quest.getState(client) == QuestState.FINISHED;
+        return result = quest.getState(client) == QuestState.FINISHED;
     }
 
     @Override

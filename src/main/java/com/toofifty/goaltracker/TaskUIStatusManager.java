@@ -21,13 +21,11 @@ public class TaskUIStatusManager
 
     public void addRefresher(Task task, Runnable refresher)
     {
-        System.out.println("Registered refresher for task: " + task.toString());
         getTaskRefreshers().put(task, refresher);
     }
 
     public void addRefresher(Goal goal, Runnable refresher)
     {
-        System.out.println("Registered refresher for goal: " + goal.toString());
         getGoalRefreshers().put(goal, refresher);
     }
 

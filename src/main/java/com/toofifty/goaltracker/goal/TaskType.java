@@ -5,24 +5,24 @@ import lombok.Getter;
 
 public enum TaskType
 {
-    MANUAL("manual", new ManualTaskFactory()),
-    SKILL_LEVEL("skill_level", new SkillLevelTaskFactory()),
-    SKILL_XP("skill_xp", new SkillXpTaskFactory()),
-    QUEST("quest", new QuestTaskFactory()),
-    ITEM("item", new ItemTaskFactory());
+    MANUAL("manual", ManualTaskFactory.class),
+    SKILL_LEVEL("skill_level", SkillLevelTaskFactory.class),
+    SKILL_XP("skill_xp", SkillXpTaskFactory.class),
+    QUEST("quest", QuestTaskFactory.class),
+    ITEM("item", ItemTaskFactory.class);
 
     @Getter
     private final String name;
     @Getter
-    private final TaskFactory factory;
+    private final Class<?> factory;
 
-    TaskType(String name, TaskFactory factory)
+    <T extends TaskFactory> TaskType(String name, Class<T> factory)
     {
         this.name = name;
         this.factory = factory;
     }
 
-    static TaskType fromString(String name)
+    public static TaskType fromString(String name)
     {
         for (TaskType type : TaskType.values()) {
             if (type.toString().equals(name)) {

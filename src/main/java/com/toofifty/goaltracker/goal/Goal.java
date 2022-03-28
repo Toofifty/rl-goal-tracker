@@ -4,10 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.toofifty.goaltracker.GoalManager;
 import com.toofifty.goaltracker.ReorderableList;
-import com.toofifty.goaltracker.goal.factory.TaskFactory;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,25 +32,10 @@ public class Goal implements ReorderableList<Task>
         this.goalManager = goalManager;
     }
 
-    public static Goal create(GoalManager goalManager, JsonObject json)
+
+    public List<Task> getIncomplete()
     {
-        Goal goal = new Goal(goalManager);
-        goal.setDescription(json.get("description").getAsString());
-        goal.setDisplayOrder(json.get("display_order").getAsInt());
-
-        json.get("items").getAsJsonArray().forEach(item -> {
-            JsonObject obj = item.getAsJsonObject();
-            TaskFactory factory = TaskType.fromString(
-                obj.get("type").getAsString()).getFactory();
-            goal.add(factory.create(goal, obj));
-        });
-
-        return goal;
-    }
-
-    public List<Task> getIncomplete(Client client)
-    {
-        return filterBy(task -> !task.checkSafe(client));
+        return filterBy(task -> !task.check());
     }
 
     private List<Task> filterBy(Predicate<Task> predicate)
@@ -60,19 +43,19 @@ public class Goal implements ReorderableList<Task>
         return tasks.stream().filter(predicate).collect(Collectors.toList());
     }
 
-    public Boolean isComplete(Client client)
+    public Boolean isComplete()
     {
-        return this.getComplete(client).size() == this.getTasks().size();
+        return this.getComplete().size() == this.getTasks().size();
     }
 
-    public List<Task> getComplete(Client client)
+    public List<Task> getComplete()
     {
-        return filterBy(task -> task.checkSafe(client));
+        return filterBy(Task::check);
     }
 
-    public Boolean isInProgress(Client client)
+    public Boolean isInProgress()
     {
-        return this.getComplete(client).size() > 0;
+        return this.getComplete().size() > 0;
     }
 
     public JsonObject serialize()

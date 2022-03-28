@@ -46,7 +46,7 @@ public class GoalPanel extends JPanel implements Refreshable
             if (task.getType() == TaskType.MANUAL) {
                 taskPanel.onClick(e -> {
                     ((ManualTask) task).toggle();
-                    if (task.check(plugin.getClient())) {
+                    if (task.check()) {
                         plugin.notifyTask(task);
                     }
                     task.save();
@@ -60,7 +60,7 @@ public class GoalPanel extends JPanel implements Refreshable
         taskListPanel.setPlaceholder("No tasks added yet");
         add(taskListPanel, BorderLayout.CENTER);
 
-        NewTaskPanel newTaskPanel = new NewTaskPanel(goal);
+        NewTaskPanel newTaskPanel = new NewTaskPanel(plugin, goal);
         newTaskPanel.onUpdate(() -> {
             taskListPanel.tryBuildList();
             taskListPanel.refresh();

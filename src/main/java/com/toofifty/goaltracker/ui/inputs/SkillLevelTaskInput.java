@@ -1,7 +1,9 @@
 package com.toofifty.goaltracker.ui.inputs;
 
+import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.SkillLevelTask;
+import com.toofifty.goaltracker.goal.factory.SkillLevelTaskFactory;
 import com.toofifty.goaltracker.ui.ComboBox;
 import com.toofifty.goaltracker.ui.SimpleDocumentListener;
 import net.runelite.api.Skill;
@@ -24,9 +26,9 @@ public class SkillLevelTaskInput extends TaskInput
 
     private Pattern numberPattern = Pattern.compile("^(?:\\d{1,2})?$");
 
-    public SkillLevelTaskInput(Goal goal)
+    public SkillLevelTaskInput(GoalTrackerPlugin plugin, Goal goal)
     {
-        super("Skill level");
+        super(plugin, "Skill level");
         this.goal = goal;
 
         levelField = new FlatTextField();
@@ -34,14 +36,15 @@ public class SkillLevelTaskInput extends TaskInput
         levelField.getTextField().setHorizontalAlignment(SwingConstants.RIGHT);
         levelField.setText(levelFieldValue);
         levelField.setBackground(ColorScheme.DARKER_GRAY_COLOR);
-        levelField.getDocument().addDocumentListener((SimpleDocumentListener) e -> SwingUtilities.invokeLater(() -> {
-            String value = levelField.getText();
-            if (!numberPattern.matcher(value).find()) {
-                levelField.setText(levelFieldValue);
-                return;
-            }
-            levelFieldValue = value;
-        }));
+        levelField.getDocument().addDocumentListener(
+            (SimpleDocumentListener) e -> SwingUtilities.invokeLater(() -> {
+                String value = levelField.getText();
+                if (!numberPattern.matcher(value).find()) {
+                    levelField.setText(levelFieldValue);
+                    return;
+                }
+                levelFieldValue = value;
+            }));
         levelField.setPreferredSize(new Dimension(92, PREFERRED_INPUT_HEIGHT));
 
         getInputRow().add(levelField, BorderLayout.CENTER);
@@ -56,9 +59,10 @@ public class SkillLevelTaskInput extends TaskInput
     {
         if (levelField.getText().isEmpty()) return;
 
-        SkillLevelTask task = new SkillLevelTask(goal);
-        task.setSkill((Skill) skillField.getSelectedItem());
-        task.setLevel(Integer.parseInt(levelField.getText()));
+        SkillLevelTask task = new SkillLevelTaskFactory(plugin, goal).create(
+            (Skill) skillField.getSelectedItem(),
+            Integer.parseInt(levelField.getText())
+        );
         goal.add(task);
 
         getUpdater().run();

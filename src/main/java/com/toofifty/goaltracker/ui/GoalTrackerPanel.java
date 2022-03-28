@@ -13,10 +13,10 @@ import java.awt.*;
 
 public class GoalTrackerPanel extends PluginPanel implements Refreshable
 {
-    private GoalTrackerPlugin plugin;
+    private final GoalTrackerPlugin plugin;
 
-    private JPanel mainPanel = new JPanel(new BorderLayout());
-    private ListPanel<Goal> goalListPanel;
+    private final JPanel mainPanel = new JPanel(new BorderLayout());
+    private final ListPanel<Goal> goalListPanel;
 
     public GoalTrackerPanel(GoalTrackerPlugin plugin)
     {
@@ -72,6 +72,7 @@ public class GoalTrackerPanel extends PluginPanel implements Refreshable
     {
         removeAll();
         add(mainPanel, BorderLayout.CENTER);
+        goalListPanel.tryBuildList();
         goalListPanel.refresh();
 
         revalidate();

@@ -31,8 +31,8 @@ public class GoalItemContent extends JPanel implements Refreshable
     @Override
     public void refresh()
     {
-        Boolean isComplete = goal.isComplete(plugin.getClient());
-        Boolean isInProgress = goal.isInProgress(plugin.getClient());
+        Boolean isComplete = goal.isComplete();
+        Boolean isInProgress = goal.isInProgress();
 
         Color color = isComplete ? ColorScheme.PROGRESS_COMPLETE_COLOR
                                  : isInProgress
@@ -43,8 +43,7 @@ public class GoalItemContent extends JPanel implements Refreshable
         title.setForeground(color);
 
         progress.setText(
-            goal.getComplete(plugin.getClient()).size() + "/" + goal.getTasks()
-                .size());
+            goal.getComplete().size() + "/" + goal.getTasks().size());
         progress.setForeground(color);
     }
 }

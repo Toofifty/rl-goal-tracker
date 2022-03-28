@@ -1,21 +1,32 @@
 package com.toofifty.goaltracker.goal.factory;
 
 import com.google.gson.JsonObject;
+import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.SkillXpTask;
-import com.toofifty.goaltracker.goal.Task;
 import net.runelite.api.Skill;
 
 public class SkillXpTaskFactory extends TaskFactory
 {
-    @Override
-    protected Task createObject(Goal goal, JsonObject json)
+    public SkillXpTaskFactory(GoalTrackerPlugin plugin, Goal goal)
     {
-        SkillXpTask task = new SkillXpTask(goal);
-        task.setXp(json.get("xp").getAsInt());
-        task.setSkill(Skill.valueOf(json.get("skill")
+        super(plugin, goal);
+    }
+
+    @Override
+    protected SkillXpTask createObjectFromJson(JsonObject json)
+    {
+        return create(Skill.valueOf(json.get("skill")
             .getAsString()
-            .toUpperCase()));
+            .toUpperCase()), json.get("xp").getAsInt());
+    }
+
+    public SkillXpTask create(Skill skill, int xp)
+    {
+        SkillXpTask task = new SkillXpTask(
+            plugin.getClient(), plugin.getSkillIconManager(), goal);
+        task.setSkill(skill);
+        task.setXp(xp);
         return task;
     }
 }

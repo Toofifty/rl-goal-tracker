@@ -1,7 +1,9 @@
 package com.toofifty.goaltracker.ui.inputs;
 
+import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ManualTask;
+import com.toofifty.goaltracker.goal.factory.ManualTaskFactory;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.components.FlatTextField;
 
@@ -14,9 +16,9 @@ public class ManualTaskInput extends TaskInput
     private FlatTextField titleField;
     private Goal goal;
 
-    public ManualTaskInput(Goal goal)
+    public ManualTaskInput(GoalTrackerPlugin plugin, Goal goal)
     {
-        super("Quick add");
+        super(plugin, "Quick add");
         this.goal = goal;
 
         titleField = new FlatTextField();
@@ -26,7 +28,8 @@ public class ManualTaskInput extends TaskInput
             @Override
             public void keyPressed(KeyEvent e)
             {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER && titleField.getText().length() > 0) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER && titleField.getText()
+                                                                     .length() > 0) {
                     onSubmit();
                 }
             }
@@ -40,8 +43,8 @@ public class ManualTaskInput extends TaskInput
     {
         if (titleField.getText().isEmpty()) return;
 
-        ManualTask task = new ManualTask(goal);
-        task.setDescription(titleField.getText());
+        ManualTask task = new ManualTaskFactory(plugin, goal).create(
+            titleField.getText(), false);
         goal.add(task);
 
         getUpdater().run();
