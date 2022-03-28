@@ -52,7 +52,8 @@ public class TaskItemContent extends JPanel implements Refreshable
     public void refresh()
     {
         Boolean taskComplete = task.checkSafe(plugin.getClient());
-        System.out.println("Refresh TaskItemContent, complete:" + taskComplete);
+        System.out.println(
+            "Refresh TaskItemContent, task: " + task.toString() + " complete: " + taskComplete);
 
         titleLabel.setText(task.toString());
         titleLabel.setForeground(

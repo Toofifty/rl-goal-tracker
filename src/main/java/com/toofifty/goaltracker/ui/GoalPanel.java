@@ -5,6 +5,7 @@ import com.toofifty.goaltracker.TaskUIStatusManager;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ManualTask;
 import com.toofifty.goaltracker.goal.Task;
+import com.toofifty.goaltracker.goal.TaskType;
 import net.runelite.client.ui.ColorScheme;
 
 import javax.swing.*;
@@ -42,7 +43,7 @@ public class GoalPanel extends JPanel implements Refreshable
             taskPanel.add(new TaskItemContent(plugin, task));
             taskPanel.setBorder(new EmptyBorder(2, 4, 2, 4));
 
-            if (task.getType() == Task.TaskType.MANUAL) {
+            if (task.getType() == TaskType.MANUAL) {
                 taskPanel.onClick(e -> {
                     ((ManualTask) task).toggle();
                     if (task.check(plugin.getClient())) {
@@ -63,6 +64,7 @@ public class GoalPanel extends JPanel implements Refreshable
         newTaskPanel.onUpdate(() -> {
             taskListPanel.tryBuildList();
             taskListPanel.refresh();
+            plugin.setValidateAll(true);
         });
         add(newTaskPanel, BorderLayout.SOUTH);
     }

@@ -12,9 +12,8 @@ import java.util.List;
 
 public class QuestTaskInput extends TaskInput
 {
-    private Goal goal;
-
-    private ComboBox<Quest> questField;
+    private final Goal goal;
+    private final ComboBox<Quest> questField;
 
     public QuestTaskInput(Goal goal)
     {

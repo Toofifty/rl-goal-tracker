@@ -1,7 +1,6 @@
 package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
-import com.toofifty.goaltracker.goal.factory.*;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
@@ -15,6 +14,7 @@ public abstract class Task
     private Goal goal;
 
     @Setter
+    @Getter
     private Boolean previousResult = false;
 
     private Boolean hasBeenNotified = false;
@@ -56,7 +56,7 @@ public abstract class Task
     public JsonObject serialize()
     {
         JsonObject json = new JsonObject();
-        json.addProperty("type", getType().name);
+        json.addProperty("type", getType().getName());
         json.addProperty("previous_result", previousResult);
         json.addProperty("has_been_notified", hasBeenNotified);
         return addSerializedProperties(json);
@@ -78,41 +78,4 @@ public abstract class Task
         goal.save();
     }
 
-    public enum TaskType
-    {
-        MANUAL("manual", new ManualTaskFactory()),
-        SKILL_LEVEL("skill_level", new SkillLevelTaskFactory()),
-        SKILL_XP("skill_xp", new SkillXpTaskFactory()),
-        QUEST("quest", new QuestTaskFactory());
-
-        private final String name;
-        private final TaskFactory factory;
-
-        TaskType(String name, TaskFactory factory)
-        {
-            this.name = name;
-            this.factory = factory;
-        }
-
-        static TaskType fromString(String name)
-        {
-            for (TaskType type : TaskType.values()) {
-                if (type.toString().equals(name)) {
-                    return type;
-                }
-            }
-            throw new IllegalStateException("Invalid task type " + name);
-        }
-
-        @Override
-        public String toString()
-        {
-            return this.name;
-        }
-
-        public TaskFactory getFactory()
-        {
-            return this.factory;
-        }
-    }
 }

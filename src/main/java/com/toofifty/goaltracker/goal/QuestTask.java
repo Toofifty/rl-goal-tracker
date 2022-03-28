@@ -38,6 +38,9 @@ public class QuestTask extends Task
     @Override
     public Boolean check(Client client)
     {
+        System.out.println(
+            "Checking QUEST task: " + quest.getName() + " state: " + quest.getState(
+                client));
         return quest.getState(client) == QuestState.FINISHED;
     }
 
@@ -56,7 +59,7 @@ public class QuestTask extends Task
     @Override
     protected JsonObject addSerializedProperties(JsonObject json)
     {
-        json.addProperty("quest_name", quest.getName());
+        json.addProperty("quest_id", quest.getId());
         return json;
     }
 

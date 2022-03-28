@@ -23,7 +23,7 @@ dependencies {
     testImplementation group: 'net.runelite', name: 'jshell', version: runeLiteVersion
 }
 
-group = 'com.example'
+group = 'com.toofifty.goaltracker'
 version = '1.0-SNAPSHOT'
 sourceCompatibility = '1.8'
 

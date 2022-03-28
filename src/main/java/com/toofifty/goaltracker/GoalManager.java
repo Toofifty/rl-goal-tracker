@@ -3,6 +3,7 @@ package com.toofifty.goaltracker;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.SkillLevelTask;
 import com.toofifty.goaltracker.goal.Task;
+import com.toofifty.goaltracker.goal.TaskType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,12 +59,12 @@ public class GoalManager implements ReorderableList<Goal>
         return tasks;
     }
 
-    public <T> List<T> getAllTasksOfType(Task.TaskType type)
+    public <T> List<T> getAllIncompleteTasksOfType(TaskType type)
     {
         List<T> tasks = new ArrayList<>();
         for (Goal goal : goals) {
             for (Task task : goal.getAll()) {
-                if (task.getType() == type) {
+                if (!task.getPreviousResult() && task.getType() == type) {
                     tasks.add((T) task);
                 }
             }

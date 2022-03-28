@@ -1,10 +1,7 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.ui.inputs.ManualTaskInput;
-import com.toofifty.goaltracker.ui.inputs.QuestTaskInput;
-import com.toofifty.goaltracker.ui.inputs.SkillLevelTaskInput;
-import com.toofifty.goaltracker.ui.inputs.SkillXpTaskInput;
+import com.toofifty.goaltracker.ui.inputs.*;
 import net.runelite.client.ui.ColorScheme;
 
 import javax.swing.*;
@@ -33,7 +30,10 @@ public class NewTaskPanel extends JPanel
         constraints.gridy = 0;
         constraints.ipady = 8;
 
-        add(new ManualTaskInput(goal).onUpdate(() -> updater.run()), constraints);
+        add(
+            new ManualTaskInput(goal).onUpdate(() -> updater.run()),
+            constraints
+        );
         constraints.gridy++;
 
         moreOptionsButton = new TextButton("+ More options");
@@ -83,13 +83,26 @@ public class NewTaskPanel extends JPanel
         moreOptionsPanel = new JPanel(new GridBagLayout());
         moreOptionsPanel.setVisible(false);
 
-        moreOptionsPanel.add(new SkillLevelTaskInput(goal).onUpdate(() -> updater.run()), constraints);
+        moreOptionsPanel.add(
+            new SkillLevelTaskInput(goal).onUpdate(() -> updater.run()),
+            constraints
+        );
         constraints.gridy++;
 
-        moreOptionsPanel.add(new SkillXpTaskInput(goal).onUpdate(() -> updater.run()), constraints);
+        moreOptionsPanel.add(
+            new SkillXpTaskInput(goal).onUpdate(() -> updater.run()),
+            constraints
+        );
         constraints.gridy++;
 
-        moreOptionsPanel.add(new QuestTaskInput(goal).onUpdate(() -> updater.run()), constraints);
+        moreOptionsPanel.add(
+            new QuestTaskInput(goal).onUpdate(() -> updater.run()),
+            constraints
+        );
+        constraints.gridy++;
+
+        moreOptionsPanel.add(
+            new ItemTaskInput(goal).onUpdate(() -> updater.run()), constraints);
         constraints.gridy++;
     }
 

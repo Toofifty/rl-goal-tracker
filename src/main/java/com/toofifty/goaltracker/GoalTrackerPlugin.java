@@ -1,16 +1,18 @@
 package com.toofifty.goaltracker;
 
 import com.google.inject.Provides;
-import com.toofifty.goaltracker.goal.SkillLevelTask;
-import com.toofifty.goaltracker.goal.SkillXpTask;
-import com.toofifty.goaltracker.goal.Task;
+import com.toofifty.goaltracker.goal.*;
 import com.toofifty.goaltracker.ui.GoalTrackerPanel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
+import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.StatChanged;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -56,6 +58,9 @@ public class GoalTrackerPlugin extends Plugin
 
     private GoalTrackerPanel goalTrackerPanel;
 
+    @Setter
+    private boolean validateAll = true;
+
     @Provides
     GoalTrackerConfig getConfig(ConfigManager configManager)
     {
@@ -98,10 +103,8 @@ public class GoalTrackerPlugin extends Plugin
     @Subscribe
     public void onStatChanged(StatChanged event)
     {
-        System.out.println("onStatChanged " + event.getSkill()
-            .getName() + " " + event.getLevel() + " " + event.getXp());
-        List<SkillLevelTask> skillLevelTasks = goalManager.getAllTasksOfType(
-            Task.TaskType.SKILL_LEVEL);
+        List<SkillLevelTask> skillLevelTasks = goalManager.getAllIncompleteTasksOfType(
+            TaskType.SKILL_LEVEL);
         for (SkillLevelTask task : skillLevelTasks) {
             if (event.getSkill() == task.getSkill() && event.getLevel() >= task.getLevel()) {
                 notifyTask(task);
@@ -109,8 +112,8 @@ public class GoalTrackerPlugin extends Plugin
             }
         }
 
-        List<SkillXpTask> skillXpTasks = goalManager.getAllTasksOfType(
-            Task.TaskType.SKILL_XP);
+        List<SkillXpTask> skillXpTasks = goalManager.getAllIncompleteTasksOfType(
+            TaskType.SKILL_XP);
         for (SkillXpTask task : skillXpTasks) {
             if (event.getSkill() == task.getSkill() && event.getXp() >= task.getXp()) {
                 notifyTask(task);
@@ -140,20 +143,43 @@ public class GoalTrackerPlugin extends Plugin
         task.hasBeenNotified(true);
     }
 
-    //    @Subscribe
-    //    public void onGameStateChanged(GameStateChanged event)
-    //    {
-    //        if (client.getGameState() != GameState.LOGGED_IN) {
-    //            return;
-    //        }
-    //
-    //        goalTrackerPanel.revalidate();
-    //    }
-    //
-    //    @Subscribe
-    //    public void onGameTick(GameTick event)
-    //    {
-    //        System.out.println("Game tick");
-    //        System.out.println(client.isClientThread());
-    //    }
+    @Subscribe
+    public void onGameStateChanged(GameStateChanged event)
+    {
+        if (client.getGameState() != GameState.LOGGED_IN) return;
+
+        // redo the login check on the next game tick
+        validateAll = true;
+    }
+
+    @Subscribe
+    public void onGameTick(GameTick event)
+    {
+        if (!validateAll) return;
+        if (client.getGameState() != GameState.LOGGED_IN) return;
+
+        validateAll = false;
+        // perform a full refresh just once on login
+        // onGameStateChanged reports incorrect quest statuses,
+        // so this need to be done in this subscriber
+        goalTrackerPanel.refresh();
+    }
+
+    @Subscribe
+    public void onChatMessage(ChatMessage event)
+    {
+        // attempt to refresh
+        if (event.getType() == ChatMessageType.GAMEMESSAGE && event.getMessage()
+            .contains("Quest complete")) {
+
+            List<QuestTask> questTasks = goalManager.getAllIncompleteTasksOfType(
+                TaskType.QUEST);
+            for (QuestTask task : questTasks) {
+                if (task.check(client)) {
+                    notifyTask(task);
+                    TaskUIStatusManager.getInstance().refresh(task);
+                }
+            }
+        }
+    }
 }

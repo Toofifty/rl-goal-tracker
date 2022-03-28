@@ -42,7 +42,7 @@ public class Goal implements ReorderableList<Task>
 
         json.get("items").getAsJsonArray().forEach(item -> {
             JsonObject obj = item.getAsJsonObject();
-            TaskFactory factory = Task.TaskType.fromString(
+            TaskFactory factory = TaskType.fromString(
                 obj.get("type").getAsString()).getFactory();
             goal.add(factory.create(goal, obj));
         });
@@ -57,8 +57,7 @@ public class Goal implements ReorderableList<Task>
 
     private List<Task> filterBy(Predicate<Task> predicate)
     {
-        return tasks.stream().filter(predicate).collect(
-            Collectors.<Task>toList());
+        return tasks.stream().filter(predicate).collect(Collectors.toList());
     }
 
     public Boolean isComplete(Client client)
