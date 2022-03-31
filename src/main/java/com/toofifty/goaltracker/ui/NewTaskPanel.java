@@ -2,6 +2,7 @@ package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
+import com.toofifty.goaltracker.ui.inputs.ItemTaskInput;
 import com.toofifty.goaltracker.ui.inputs.ManualTaskInput;
 import com.toofifty.goaltracker.ui.inputs.QuestTaskInput;
 import com.toofifty.goaltracker.ui.inputs.SkillLevelTaskInput;
@@ -107,12 +108,12 @@ public class NewTaskPanel extends JPanel
             constraints
         );
         constraints.gridy++;
-        //
-        //        moreOptionsPanel.add(
-        //            new ItemTaskInput(plugin, goal).onUpdate(() -> updater.run()),
-        //            constraints
-        //        );
-        //        constraints.gridy++;
+
+        moreOptionsPanel.add(
+            new ItemTaskInput(plugin, goal).onUpdate(() -> updater.run()),
+            constraints
+        );
+        constraints.gridy++;
     }
 
     public void onUpdate(Runnable updater)

@@ -18,16 +18,14 @@ import net.runelite.client.ui.components.FlatTextField;
 
 public class SkillXpTaskInput extends TaskInput
 {
-    private Goal goal;
+    private final Goal goal;
 
-    private FlatTextField xpField;
+    private final FlatTextField xpField;
+    private final ComboBox<Skill> skillField;
+    private final Pattern numberPattern = Pattern.compile("^(?:\\d+)?$");
+    private final Pattern mPattern = Pattern.compile("^(?:\\d+m)?$", Pattern.CASE_INSENSITIVE);
+    private final Pattern kPattern = Pattern.compile("^(?:\\d+k)?$", Pattern.CASE_INSENSITIVE);
     private String xpFieldValue = "13034431";
-
-    private ComboBox<Skill> skillField;
-
-    private Pattern numberPattern = Pattern.compile("^(?:\\d+)?$");
-    private Pattern mPattern = Pattern.compile("^(?:\\d+m)?$", 'i');
-    private Pattern kPattern = Pattern.compile("^(?:\\d+k)?$", 'i');
 
     public SkillXpTaskInput(GoalTrackerPlugin plugin, Goal goal)
     {

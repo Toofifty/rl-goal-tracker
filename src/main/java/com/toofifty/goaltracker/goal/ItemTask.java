@@ -2,9 +2,9 @@ package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
 import java.awt.image.BufferedImage;
+import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
-import net.runelite.api.ItemComposition;
 import net.runelite.client.game.ItemManager;
 
 public class ItemTask extends Task
@@ -13,10 +13,15 @@ public class ItemTask extends Task
     private final ItemManager itemManager;
 
     @Setter
-    private int amount;
+    private int quantity;
 
     @Setter
-    private ItemComposition item;
+    @Getter
+    private int itemId;
+
+    @Setter
+    @Getter
+    private String itemName;
 
     public ItemTask(
         Client client, ItemManager itemManager, Goal goal)
@@ -35,7 +40,11 @@ public class ItemTask extends Task
     @Override
     public String toString()
     {
-        return String.format("%,d", amount) + " x " + item.getName();
+        if (quantity == 1) {
+            return itemName;
+        }
+
+        return String.format("%,d", quantity) + " x " + itemName;
     }
 
     @Override
@@ -48,14 +57,19 @@ public class ItemTask extends Task
     protected JsonObject addSerializedProperties(
         JsonObject json)
     {
-        json.addProperty("item_id", item.getId());
-        json.addProperty("amount", amount);
+        json.addProperty("item_id", itemId);
+        json.addProperty("item_name", itemName);
+        json.addProperty("quantity", quantity);
         return json;
     }
 
     @Override
     public BufferedImage getIcon()
     {
-        return itemManager.getImage(item.getId());
+        if (!client.isClientThread()) {
+            return null;
+        }
+
+        return itemManager.getImage(itemId);
     }
 }

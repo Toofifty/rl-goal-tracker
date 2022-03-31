@@ -22,6 +22,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
 import net.runelite.api.events.StatChanged;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
 import net.runelite.client.chat.QueuedMessage;
@@ -30,6 +31,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.SessionOpen;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SkillIconManager;
+import net.runelite.client.game.chatbox.ChatboxItemSearch;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
@@ -52,8 +54,16 @@ public class GoalTrackerPlugin extends Plugin
     @Inject
     private ItemManager itemManager;
 
+    @Getter
+    @Inject
+    private ChatboxItemSearch itemSearch;
+
     @Inject
     private ClientToolbar clientToolbar;
+
+    @Getter
+    @Inject
+    private ClientThread clientThread;
 
     @Inject
     private ChatMessageManager chatMessageManager;
@@ -79,7 +89,7 @@ public class GoalTrackerPlugin extends Plugin
     }
 
     @Override
-    protected void startUp() throws Exception
+    protected void startUp()
     {
         goalManager = new GoalManager(this);
         goalManager.load();
@@ -98,7 +108,7 @@ public class GoalTrackerPlugin extends Plugin
     }
 
     @Override
-    protected void shutDown() throws Exception
+    protected void shutDown()
     {
         goalManager.save();
 

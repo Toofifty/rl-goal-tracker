@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ItemTask;
-import net.runelite.api.ItemComposition;
 
 public class ItemTaskFactory extends TaskFactory
 {
@@ -17,17 +16,19 @@ public class ItemTaskFactory extends TaskFactory
     protected ItemTask createObjectFromJson(JsonObject json)
     {
         return create(
-            json.get("item_id").getAsInt(), json.get("amount").getAsInt());
+            json.get("item_id").getAsInt(), json.get("item_name").getAsString(),
+            json.get("quantity").getAsInt());
     }
 
-    public ItemTask create(int itemId, int amount)
+    public ItemTask create(int itemId, String itemName, int quantity)
     {
+
         ItemTask task = new ItemTask(
             plugin.getClient(), plugin.getItemManager(), goal);
-        ItemComposition item = plugin.getItemManager().getItemComposition(
-            itemId);
-        task.setItem(item);
-        task.setAmount(amount);
+
+        task.setItemId(itemId);
+        task.setItemName(itemName);
+        task.setQuantity(quantity);
         return task;
     }
 }
