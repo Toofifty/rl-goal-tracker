@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.factory.GoalFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 

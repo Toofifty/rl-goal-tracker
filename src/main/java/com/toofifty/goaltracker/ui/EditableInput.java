@@ -1,17 +1,19 @@
 package com.toofifty.goaltracker.ui;
 
-import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.components.FlatTextField;
-
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseListener;
 import java.util.function.Consumer;
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.components.FlatTextField;
 
 public class EditableInput extends JPanel
 {
@@ -23,7 +25,8 @@ public class EditableInput extends JPanel
 
     private final FlatTextField inputField = new FlatTextField();
     private final TextButton save = new TextButton("Save").narrow();
-    private final TextButton cancel = new TextButton("Cancel", ColorScheme.PROGRESS_ERROR_COLOR).narrow();
+    private final TextButton cancel = new TextButton("Cancel", ColorScheme.PROGRESS_ERROR_COLOR)
+        .narrow();
     private final TextButton edit = new TextButton("Edit", ColorScheme.LIGHT_GRAY_COLOR).narrow();
 
     private Consumer<String> saveAction;

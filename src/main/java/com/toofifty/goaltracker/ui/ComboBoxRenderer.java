@@ -1,9 +1,9 @@
 package com.toofifty.goaltracker.ui;
 
+import java.awt.Component;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 import org.apache.commons.text.WordUtils;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class ComboBoxRenderer extends DefaultListCellRenderer
 {

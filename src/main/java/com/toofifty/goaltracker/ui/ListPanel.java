@@ -1,16 +1,22 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.ReorderableList;
-import net.runelite.client.ui.ColorScheme;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
+import net.runelite.client.ui.ColorScheme;
 
 public class ListPanel<T> extends JScrollPane implements Refreshable
 {

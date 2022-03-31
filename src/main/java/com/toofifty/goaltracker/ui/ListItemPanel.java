@@ -1,15 +1,18 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.ReorderableList;
-import lombok.Setter;
-import net.runelite.client.ui.ColorScheme;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.border.EmptyBorder;
+import lombok.Setter;
+import net.runelite.client.ui.ColorScheme;
 
 public class ListItemPanel<T> extends JPanel implements Refreshable
 {
@@ -89,10 +92,18 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
     public void refreshMenu()
     {
         popupMenu.removeAll();
-        if (!list.isFirst(item)) popupMenu.add(moveUp);
-        if (!list.isLast(item)) popupMenu.add(moveDown);
-        if (!list.isFirst(item)) popupMenu.add(moveToTop);
-        if (!list.isLast(item)) popupMenu.add(moveToBottom);
+        if (!list.isFirst(item)) {
+            popupMenu.add(moveUp);
+        }
+        if (!list.isLast(item)) {
+            popupMenu.add(moveDown);
+        }
+        if (!list.isFirst(item)) {
+            popupMenu.add(moveToTop);
+        }
+        if (!list.isLast(item)) {
+            popupMenu.add(moveToBottom);
+        }
         popupMenu.add(removeTask);
     }
 

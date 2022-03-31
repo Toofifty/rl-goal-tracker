@@ -1,9 +1,8 @@
 package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
-import lombok.Setter;
-
 import java.awt.image.BufferedImage;
+import lombok.Setter;
 
 public class ManualTask extends Task
 {

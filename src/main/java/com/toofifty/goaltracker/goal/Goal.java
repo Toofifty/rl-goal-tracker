@@ -4,13 +4,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.toofifty.goaltracker.GoalManager;
 import com.toofifty.goaltracker.ReorderableList;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 
 public class Goal implements ReorderableList<Task>
 {

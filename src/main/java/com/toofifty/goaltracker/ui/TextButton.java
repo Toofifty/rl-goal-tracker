@@ -1,14 +1,14 @@
 package com.toofifty.goaltracker.ui;
 
-import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.FontManager;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.function.Consumer;
+import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
+import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.FontManager;
 
 public class TextButton extends JLabel
 {
@@ -30,17 +30,17 @@ public class TextButton extends JLabel
         setForeground(mainColor);
     }
 
+    public TextButton(String text, Consumer<MouseEvent> clickListener)
+    {
+        this(text);
+        onClick(clickListener);
+    }
+
     public TextButton setMainColor(Color mainColor)
     {
         this.mainColor = mainColor;
         setForeground(mainColor);
         return this;
-    }
-
-    public TextButton(String text, Consumer<MouseEvent> clickListener)
-    {
-        this(text);
-        onClick(clickListener);
     }
 
     public TextButton onClick(Consumer<MouseEvent> clickListener)

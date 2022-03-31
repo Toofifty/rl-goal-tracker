@@ -1,14 +1,13 @@
 package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
+import java.awt.image.BufferedImage;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.Skill;
 import net.runelite.client.game.SkillIconManager;
-
-import java.awt.image.BufferedImage;
 
 public class SkillLevelTask extends Task
 {

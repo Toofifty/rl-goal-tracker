@@ -6,14 +6,15 @@ import com.toofifty.goaltracker.goal.SkillLevelTask;
 import com.toofifty.goaltracker.goal.factory.SkillLevelTaskFactory;
 import com.toofifty.goaltracker.ui.ComboBox;
 import com.toofifty.goaltracker.ui.SimpleDocumentListener;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.regex.Pattern;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.components.FlatTextField;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.util.regex.Pattern;
 
 public class SkillLevelTaskInput extends TaskInput
 {
@@ -57,7 +58,9 @@ public class SkillLevelTaskInput extends TaskInput
     @Override
     protected void onSubmit()
     {
-        if (levelField.getText().isEmpty()) return;
+        if (levelField.getText().isEmpty()) {
+            return;
+        }
 
         SkillLevelTask task = new SkillLevelTaskFactory(plugin, goal).create(
             (Skill) skillField.getSelectedItem(),

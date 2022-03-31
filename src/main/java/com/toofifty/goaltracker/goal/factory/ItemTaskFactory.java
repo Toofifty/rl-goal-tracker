@@ -8,8 +8,7 @@ import net.runelite.api.ItemComposition;
 
 public class ItemTaskFactory extends TaskFactory
 {
-    public ItemTaskFactory(
-        GoalTrackerPlugin plugin, Goal goal)
+    public ItemTaskFactory(GoalTrackerPlugin plugin, Goal goal)
     {
         super(plugin, goal);
     }

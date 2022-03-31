@@ -6,11 +6,10 @@ import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ManualTask;
 import com.toofifty.goaltracker.goal.Task;
 import com.toofifty.goaltracker.goal.TaskType;
-import net.runelite.client.ui.ColorScheme;
-
-import javax.swing.*;
+import java.awt.BorderLayout;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import net.runelite.client.ui.ColorScheme;
 
 public class GoalPanel extends JPanel implements Refreshable
 {

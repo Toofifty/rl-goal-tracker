@@ -1,6 +1,11 @@
 package com.toofifty.goaltracker.goal;
 
-import com.toofifty.goaltracker.goal.factory.*;
+import com.toofifty.goaltracker.goal.factory.ItemTaskFactory;
+import com.toofifty.goaltracker.goal.factory.ManualTaskFactory;
+import com.toofifty.goaltracker.goal.factory.QuestTaskFactory;
+import com.toofifty.goaltracker.goal.factory.SkillLevelTaskFactory;
+import com.toofifty.goaltracker.goal.factory.SkillXpTaskFactory;
+import com.toofifty.goaltracker.goal.factory.TaskFactory;
 import lombok.Getter;
 
 public enum TaskType

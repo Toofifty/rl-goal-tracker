@@ -1,10 +1,9 @@
 package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
+import java.awt.image.BufferedImage;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.awt.image.BufferedImage;
 
 public abstract class Task
 {

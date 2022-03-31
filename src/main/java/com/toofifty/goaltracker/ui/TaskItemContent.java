@@ -3,13 +3,17 @@ package com.toofifty.goaltracker.ui;
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.TaskUIStatusManager;
 import com.toofifty.goaltracker.goal.Task;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.util.ImageUtil;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class TaskItemContent extends JPanel implements Refreshable
 {
@@ -56,7 +60,7 @@ public class TaskItemContent extends JPanel implements Refreshable
         titleLabel.setText(task.toString());
         titleLabel.setForeground(
             taskComplete ? ColorScheme.PROGRESS_COMPLETE_COLOR
-                         : ColorScheme.LIGHT_GRAY_COLOR);
+                : ColorScheme.LIGHT_GRAY_COLOR);
 
         if (taskComplete) {
             titleLabel.setForeground(ColorScheme.PROGRESS_COMPLETE_COLOR);

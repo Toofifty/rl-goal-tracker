@@ -5,11 +5,10 @@ import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ItemTask;
 import com.toofifty.goaltracker.goal.factory.ItemTaskFactory;
 import com.toofifty.goaltracker.ui.ComboBox;
-import net.runelite.api.ItemComposition;
-
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
+import net.runelite.api.ItemComposition;
 
 public class ItemTaskInput extends TaskInput
 {

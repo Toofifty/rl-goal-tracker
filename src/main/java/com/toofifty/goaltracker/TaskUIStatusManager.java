@@ -3,11 +3,10 @@ package com.toofifty.goaltracker;
 import com.google.inject.Provides;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.Task;
-import lombok.Getter;
-
-import javax.swing.*;
 import java.util.Map;
 import java.util.WeakHashMap;
+import javax.swing.SwingUtilities;
+import lombok.Getter;
 
 public class TaskUIStatusManager
 {
@@ -18,6 +17,14 @@ public class TaskUIStatusManager
 
     @Getter
     private final Map<Goal, Runnable> goalRefreshers = new WeakHashMap<>();
+
+    public static TaskUIStatusManager getInstance()
+    {
+        if (instance == null) {
+            instance = new TaskUIStatusManager();
+        }
+        return instance;
+    }
 
     public void addRefresher(Task task, Runnable refresher)
     {
@@ -51,13 +58,5 @@ public class TaskUIStatusManager
     public TaskUIStatusManager getTaskUIStatusManager()
     {
         return TaskUIStatusManager.getInstance();
-    }
-
-    public static TaskUIStatusManager getInstance()
-    {
-        if (instance == null) {
-            instance = new TaskUIStatusManager();
-        }
-        return instance;
     }
 }

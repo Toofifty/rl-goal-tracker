@@ -6,11 +6,12 @@ import com.toofifty.goaltracker.ui.inputs.ManualTaskInput;
 import com.toofifty.goaltracker.ui.inputs.QuestTaskInput;
 import com.toofifty.goaltracker.ui.inputs.SkillLevelTaskInput;
 import com.toofifty.goaltracker.ui.inputs.SkillXpTaskInput;
-import net.runelite.client.ui.ColorScheme;
-
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import net.runelite.client.ui.ColorScheme;
 
 public class NewTaskPanel extends JPanel
 {

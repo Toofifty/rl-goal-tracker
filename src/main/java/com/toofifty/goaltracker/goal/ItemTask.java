@@ -1,12 +1,11 @@
 package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
+import java.awt.image.BufferedImage;
 import lombok.Setter;
 import net.runelite.api.Client;
 import net.runelite.api.ItemComposition;
 import net.runelite.client.game.ItemManager;
-
-import java.awt.image.BufferedImage;
 
 public class ItemTask extends Task
 {

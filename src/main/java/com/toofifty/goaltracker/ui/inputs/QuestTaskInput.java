@@ -5,12 +5,11 @@ import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.QuestTask;
 import com.toofifty.goaltracker.goal.factory.QuestTaskFactory;
 import com.toofifty.goaltracker.ui.ComboBox;
-import net.runelite.api.Quest;
-
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import net.runelite.api.Quest;
 
 public class QuestTaskInput extends TaskInput
 {

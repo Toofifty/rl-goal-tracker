@@ -3,10 +3,11 @@ package com.toofifty.goaltracker.ui;
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.TaskUIStatusManager;
 import com.toofifty.goaltracker.goal.Goal;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import net.runelite.client.ui.ColorScheme;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class GoalItemContent extends JPanel implements Refreshable
 {
@@ -35,9 +36,9 @@ public class GoalItemContent extends JPanel implements Refreshable
         Boolean isInProgress = goal.isInProgress();
 
         Color color = isComplete ? ColorScheme.PROGRESS_COMPLETE_COLOR
-                                 : isInProgress
-                                   ? ColorScheme.PROGRESS_INPROGRESS_COLOR
-                                   : ColorScheme.PROGRESS_ERROR_COLOR;
+            : isInProgress
+                ? ColorScheme.PROGRESS_INPROGRESS_COLOR
+                : ColorScheme.PROGRESS_ERROR_COLOR;
 
         title.setText(goal.getDescription());
         title.setForeground(color);

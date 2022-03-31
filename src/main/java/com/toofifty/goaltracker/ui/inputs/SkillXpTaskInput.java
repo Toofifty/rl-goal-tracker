@@ -6,14 +6,15 @@ import com.toofifty.goaltracker.goal.SkillXpTask;
 import com.toofifty.goaltracker.goal.factory.SkillXpTaskFactory;
 import com.toofifty.goaltracker.ui.ComboBox;
 import com.toofifty.goaltracker.ui.SimpleDocumentListener;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.regex.Pattern;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.components.FlatTextField;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.util.regex.Pattern;
 
 public class SkillXpTaskInput extends TaskInput
 {
@@ -78,7 +79,9 @@ public class SkillXpTaskInput extends TaskInput
     @Override
     protected void onSubmit()
     {
-        if (xpField.getText().isEmpty()) return;
+        if (xpField.getText().isEmpty()) {
+            return;
+        }
 
         SkillXpTask task = new SkillXpTaskFactory(plugin, goal).create(
             (Skill) skillField.getSelectedItem(),

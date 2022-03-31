@@ -4,7 +4,6 @@ import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.SkillLevelTask;
 import com.toofifty.goaltracker.goal.Task;
 import com.toofifty.goaltracker.goal.TaskType;
-
 import java.util.ArrayList;
 import java.util.List;
 

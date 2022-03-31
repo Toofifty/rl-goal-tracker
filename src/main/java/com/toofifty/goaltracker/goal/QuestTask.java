@@ -2,6 +2,7 @@ package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
 import com.toofifty.goaltracker.GoalTrackerPlugin;
+import java.awt.image.BufferedImage;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
@@ -9,8 +10,6 @@ import net.runelite.api.GameState;
 import net.runelite.api.Quest;
 import net.runelite.api.QuestState;
 import net.runelite.client.util.ImageUtil;
-
-import java.awt.image.BufferedImage;
 
 public class QuestTask extends Task
 {

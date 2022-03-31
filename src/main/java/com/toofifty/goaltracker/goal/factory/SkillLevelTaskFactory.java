@@ -18,7 +18,7 @@ public class SkillLevelTaskFactory extends TaskFactory
     protected SkillLevelTask createObjectFromJson(JsonObject json)
     {
         return create(Skill.valueOf(json.get("skill").getAsString()
-                                        .toUpperCase()),
+                .toUpperCase()),
             json.get("level").getAsInt()
         );
     }
