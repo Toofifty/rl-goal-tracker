@@ -40,7 +40,7 @@ import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.NavigationButton;
 
 @Slf4j
-@PluginDescriptor(name = "Goal Tracker")
+@PluginDescriptor(name = "Goal Tracker", description = "Keep track of your goals and complete them automatically")
 public class GoalTrackerPlugin extends Plugin
 {
     @Getter
