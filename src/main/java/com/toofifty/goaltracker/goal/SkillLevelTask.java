@@ -30,13 +30,13 @@ public class SkillLevelTask extends Task
     }
 
     @Override
-    public boolean check()
+    public TaskStatus check()
     {
         if (client.getGameState() != GameState.LOGGED_IN) {
             return result;
         }
 
-        return result = client.getRealSkillLevel(skill) >= level;
+        return result = (client.getRealSkillLevel(skill) >= level ? TaskStatus.COMPLETED : TaskStatus.NOT_STARTED);
     }
 
     @Override

@@ -15,4 +15,13 @@ public interface GoalTrackerConfig extends Config
 
     @ConfigItem(keyName = "goalTrackerData", name = "", description = "")
     void goalTrackerData(String str);
+
+    @ConfigItem(keyName = "goalTrackerItemCache", name = "", description = "")
+    default String goalTrackerItemCache()
+    {
+        return "";
+    }
+
+    @ConfigItem(keyName = "goalTrackerItemCache", name = "", description = "")
+    void goalTrackerItemCache(String str);
 }

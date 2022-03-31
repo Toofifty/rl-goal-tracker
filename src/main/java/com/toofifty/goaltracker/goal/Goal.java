@@ -34,7 +34,7 @@ public class Goal implements ReorderableList<Task>
 
     public List<Task> getIncomplete()
     {
-        return filterBy(task -> !task.check());
+        return filterBy(task -> !task.check().isCompleted());
     }
 
     private List<Task> filterBy(Predicate<Task> predicate)
@@ -49,7 +49,7 @@ public class Goal implements ReorderableList<Task>
 
     public List<Task> getComplete()
     {
-        return filterBy(Task::check);
+        return filterBy(task -> task.check().isCompleted());
     }
 
     public Boolean isInProgress()

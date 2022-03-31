@@ -17,18 +17,23 @@ public class ItemTaskFactory extends TaskFactory
     {
         return create(
             json.get("item_id").getAsInt(), json.get("item_name").getAsString(),
-            json.get("quantity").getAsInt());
+            json.get("quantity").getAsInt(), json.get("acquired").getAsInt());
     }
 
-    public ItemTask create(int itemId, String itemName, int quantity)
+    public ItemTask create(int itemId, String itemName, int quantity, int acquired)
     {
 
-        ItemTask task = new ItemTask(
-            plugin.getClient(), plugin.getItemManager(), goal);
+        ItemTask task = new ItemTask(plugin.getClient(), plugin.getItemManager(), plugin.getItemCache(), goal);
 
         task.setItemId(itemId);
         task.setItemName(itemName);
         task.setQuantity(quantity);
+        task.setAcquired(acquired);
         return task;
+    }
+
+    public ItemTask create(int itemId, String itemName, int quantity)
+    {
+        return create(itemId, itemName, quantity, 0);
     }
 }

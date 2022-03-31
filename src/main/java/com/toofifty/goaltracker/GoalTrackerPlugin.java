@@ -1,6 +1,7 @@
 package com.toofifty.goaltracker;
 
 import com.google.inject.Provides;
+import com.toofifty.goaltracker.goal.ItemTask;
 import com.toofifty.goaltracker.goal.QuestTask;
 import com.toofifty.goaltracker.goal.SkillLevelTask;
 import com.toofifty.goaltracker.goal.SkillXpTask;
@@ -65,6 +66,10 @@ public class GoalTrackerPlugin extends Plugin
     @Inject
     private ClientThread clientThread;
 
+    @Getter
+    @Inject
+    private ItemCache itemCache;
+
     @Inject
     private ChatMessageManager chatMessageManager;
 
@@ -94,6 +99,8 @@ public class GoalTrackerPlugin extends Plugin
         goalManager = new GoalManager(this);
         goalManager.load();
 
+        itemCache.load();
+
         final BufferedImage icon = itemManager.getImage(ItemID.TODO_LIST);
         goalTrackerPanel = new GoalTrackerPanel(this);
 
@@ -111,6 +118,7 @@ public class GoalTrackerPlugin extends Plugin
     protected void shutDown()
     {
         goalManager.save();
+        itemCache.save();
 
         clientToolbar.removeNavigation(uiNavigationButton);
     }
@@ -203,7 +211,7 @@ public class GoalTrackerPlugin extends Plugin
             List<QuestTask> questTasks = goalManager.getAllIncompleteTasksOfType(
                 TaskType.QUEST);
             for (QuestTask task : questTasks) {
-                if (task.check()) {
+                if (task.check().isCompleted()) {
                     notifyTask(task);
                     TaskUIStatusManager.getInstance().refresh(task);
                 }
@@ -214,6 +222,21 @@ public class GoalTrackerPlugin extends Plugin
     @Subscribe
     public void onItemContainerChanged(ItemContainerChanged event)
     {
-        System.out.println("Item container changed" + event.getItemContainer());
+        itemCache.update(event.getContainerId(), event.getItemContainer().getItems());
+
+        List<ItemTask> itemTasks = goalManager.getAllIncompleteTasksOfType(TaskType.ITEM);
+        for (ItemTask task : itemTasks) {
+            if (task.getResult().isCompleted()) {
+                continue;
+            }
+
+            if (task.check().isCompleted()) {
+                notifyTask(task);
+            }
+
+            // always refresh item tasks, since the acquired
+            // count could have changed
+            TaskUIStatusManager.getInstance().refresh(task);
+        }
     }
 }

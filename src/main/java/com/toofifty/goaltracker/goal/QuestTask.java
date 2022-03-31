@@ -33,14 +33,25 @@ public class QuestTask extends Task
     }
 
     @Override
-    public boolean check()
+    public TaskStatus check()
     {
         if (client.getGameState() != GameState.LOGGED_IN || !client
             .isClientThread()) {
             return result;
         }
 
-        return result = quest.getState(client) == QuestState.FINISHED;
+        return result = getTaskStatus(quest.getState(client));
+    }
+
+    private TaskStatus getTaskStatus(QuestState questState)
+    {
+        switch (questState) {
+            case IN_PROGRESS:
+                return TaskStatus.IN_PROGRESS;
+            case FINISHED:
+                return TaskStatus.COMPLETED;
+        }
+        return TaskStatus.NOT_STARTED;
     }
 
     @Override

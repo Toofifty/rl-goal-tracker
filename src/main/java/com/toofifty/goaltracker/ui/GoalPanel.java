@@ -45,7 +45,7 @@ public class GoalPanel extends JPanel implements Refreshable
             if (task.getType() == TaskType.MANUAL) {
                 taskPanel.onClick(e -> {
                     ((ManualTask) task).toggle();
-                    if (task.check()) {
+                    if (task.check().isCompleted()) {
                         plugin.notifyTask(task);
                     }
                     task.save();

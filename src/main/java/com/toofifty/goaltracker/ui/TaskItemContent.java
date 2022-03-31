@@ -3,6 +3,7 @@ package com.toofifty.goaltracker.ui;
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.TaskUIStatusManager;
 import com.toofifty.goaltracker.goal.Task;
+import com.toofifty.goaltracker.goal.TaskStatus;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -55,30 +56,35 @@ public class TaskItemContent extends JPanel implements Refreshable
     @Override
     public void refresh()
     {
-        boolean taskComplete = task.check();
+        TaskStatus status = task.check();
 
         titleLabel.setText(task.toString());
-        titleLabel.setForeground(
-            taskComplete ? ColorScheme.PROGRESS_COMPLETE_COLOR
-                : ColorScheme.LIGHT_GRAY_COLOR);
+        titleLabel.setForeground(getForegroundColor(status));
 
-        if (taskComplete) {
-            titleLabel.setForeground(ColorScheme.PROGRESS_COMPLETE_COLOR);
+        if (status.isCompleted()) {
             iconLabel.setIcon(CHECK_MARK_ICON);
-            return;
-        }
 
-        titleLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
-
-        if (task.hasIcon()) {
+        } else if (task.hasIcon()) {
             iconLabel.setIcon(
                 new ImageIcon(task.getIcon().getScaledInstance(16, 16, 32)));
-            return;
+
+        } else {
+            iconLabel.setIcon(CROSS_MARK_ICON);
+
         }
 
-        iconLabel.setIcon(CROSS_MARK_ICON);
-
         revalidate();
+    }
+
+    private Color getForegroundColor(TaskStatus status)
+    {
+        switch (status) {
+            case IN_PROGRESS:
+                return ColorScheme.PROGRESS_INPROGRESS_COLOR;
+            case COMPLETED:
+                return ColorScheme.PROGRESS_COMPLETE_COLOR;
+        }
+        return ColorScheme.PROGRESS_ERROR_COLOR;
     }
 
     @Override

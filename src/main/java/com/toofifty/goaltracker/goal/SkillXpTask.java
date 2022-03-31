@@ -31,13 +31,13 @@ public class SkillXpTask extends Task
     }
 
     @Override
-    public boolean check()
+    public TaskStatus check()
     {
         if (client.getGameState() != GameState.LOGGED_IN) {
             return result;
         }
 
-        return result = client.getSkillExperience(skill) >= xp;
+        return result = (client.getSkillExperience(skill) >= xp ? TaskStatus.COMPLETED : TaskStatus.NOT_STARTED);
     }
 
     @Override

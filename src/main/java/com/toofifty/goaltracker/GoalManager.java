@@ -64,7 +64,7 @@ public class GoalManager implements ReorderableList<Goal>
         List<T> tasks = new ArrayList<>();
         for (Goal goal : goals) {
             for (Task task : goal.getAll()) {
-                if (!task.getResult() && task.getType() == type) {
+                if (!task.getResult().isCompleted() && task.getType() == type) {
                     tasks.add((T) task);
                 }
             }

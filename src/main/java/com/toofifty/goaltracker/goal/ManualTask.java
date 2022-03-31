@@ -7,7 +7,7 @@ import lombok.Setter;
 public class ManualTask extends Task
 {
     @Setter
-    private Boolean done = false;
+    private boolean done = false;
 
     @Setter
     private String description;
@@ -23,9 +23,9 @@ public class ManualTask extends Task
     }
 
     @Override
-    public boolean check()
+    public TaskStatus check()
     {
-        return result = done;
+        return result = (done ? TaskStatus.COMPLETED : TaskStatus.NOT_STARTED);
     }
 
     @Override

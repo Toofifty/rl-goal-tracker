@@ -9,7 +9,7 @@ public abstract class Task
 {
     @Setter
     @Getter
-    protected Boolean result = false;
+    protected TaskStatus result = TaskStatus.NOT_STARTED;
 
     @Getter
     private Goal goal;
@@ -30,7 +30,7 @@ public abstract class Task
         return hasBeenNotified;
     }
 
-    public boolean check()
+    public TaskStatus check()
     {
         return result;
     }
@@ -42,7 +42,7 @@ public abstract class Task
     {
         JsonObject json = new JsonObject();
         json.addProperty("type", getType().getName());
-        json.addProperty("previous_result", result);
+        json.addProperty("previous_result", result.getName());
         json.addProperty("has_been_notified", hasBeenNotified);
         return addSerializedProperties(json);
     }

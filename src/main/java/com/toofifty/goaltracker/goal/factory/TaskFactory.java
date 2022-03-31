@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.Task;
+import com.toofifty.goaltracker.goal.TaskStatus;
 
 abstract public class TaskFactory
 {
@@ -19,7 +20,7 @@ abstract public class TaskFactory
     public Task createFromJson(JsonObject json)
     {
         Task task = createObjectFromJson(json);
-        task.setResult(json.get("previous_result").getAsBoolean());
+        task.setResult(TaskStatus.valueOf(json.get("previous_result").getAsString().toUpperCase()));
         return task;
     }
 
