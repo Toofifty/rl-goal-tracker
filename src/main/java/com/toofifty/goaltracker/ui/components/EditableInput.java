@@ -1,4 +1,4 @@
-package com.toofifty.goaltracker.ui;
+package com.toofifty.goaltracker.ui.components;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import lombok.Setter;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.components.FlatTextField;
 
@@ -29,11 +30,12 @@ public class EditableInput extends JPanel
         .narrow();
     private final TextButton edit = new TextButton("Edit", ColorScheme.LIGHT_GRAY_COLOR).narrow();
 
+    @Setter
     private Consumer<String> saveAction;
 
     private String localValue = "";
 
-    EditableInput(Consumer<String> saveAction)
+    public EditableInput(Consumer<String> saveAction)
     {
         this.saveAction = saveAction;
 

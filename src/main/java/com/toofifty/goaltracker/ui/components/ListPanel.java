@@ -1,6 +1,7 @@
-package com.toofifty.goaltracker.ui;
+package com.toofifty.goaltracker.ui.components;
 
 import com.toofifty.goaltracker.ReorderableList;
+import com.toofifty.goaltracker.ui.Refreshable;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -20,7 +21,6 @@ import net.runelite.client.ui.ColorScheme;
 
 public class ListPanel<T> extends JScrollPane implements Refreshable
 {
-    private final JPanel wrapperPanel = new JPanel(new BorderLayout());
     private final JPanel listPanel = new JPanel(new GridBagLayout());
 
     private final ReorderableList<T> reorderableList;
@@ -31,7 +31,7 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
     private int gap = 2;
     private String placeholder = "Nothing interesting happens.";
 
-    ListPanel(
+    public ListPanel(
         ReorderableList<T> reorderableList,
         Function<T, ListItemPanel<T>> renderItem)
     {
@@ -43,6 +43,7 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
 
         listPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
+        JPanel wrapperPanel = new JPanel(new BorderLayout());
         wrapperPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
         wrapperPanel.add(listPanel, BorderLayout.NORTH);
 
@@ -142,6 +143,7 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
             JLabel placeholderLabel = new JLabel(placeholder);
             placeholderLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
             JPanel placeholderPanel = new JPanel();
+            placeholderPanel.setBackground(ColorScheme.DARK_GRAY_COLOR);
             placeholderPanel.add(placeholderLabel);
             listPanel.add(placeholderPanel, getConstraints());
         }

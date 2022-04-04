@@ -6,8 +6,10 @@ import com.toofifty.goaltracker.goal.factory.QuestTaskFactory;
 import com.toofifty.goaltracker.goal.factory.SkillLevelTaskFactory;
 import com.toofifty.goaltracker.goal.factory.SkillXpTaskFactory;
 import com.toofifty.goaltracker.goal.factory.TaskFactory;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@AllArgsConstructor
 public enum TaskType
 {
     MANUAL("manual", ManualTaskFactory.class),
@@ -18,14 +20,9 @@ public enum TaskType
 
     @Getter
     private final String name;
-    @Getter
-    private final Class<?> factory;
 
-    <T extends TaskFactory> TaskType(String name, Class<T> factory)
-    {
-        this.name = name;
-        this.factory = factory;
-    }
+    @Getter
+    private final Class<? extends TaskFactory<? extends Task>> factory;
 
     public static TaskType fromString(String name)
     {

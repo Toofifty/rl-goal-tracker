@@ -1,4 +1,4 @@
-package com.toofifty.goaltracker.ui;
+package com.toofifty.goaltracker.ui.components;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import java.awt.BorderLayout;
@@ -24,6 +24,7 @@ public class ComboBox<T> extends JComboBox<T>
 {
     private Function<T, String> formatter = null;
 
+    @SuppressWarnings("unchecked")
     public ComboBox(List<T> items)
     {
         this((T[]) items.toArray());
@@ -98,7 +99,7 @@ class ComboBoxListRenderer<T> implements ListCellRenderer<T>
             label.setText(formatter.apply(o));
         } else {
             label.setText(
-                o instanceof Enum ? Text.titleCase((Enum) o) : o.toString());
+                o instanceof Enum ? Text.titleCase((Enum<?>) o) : o.toString());
         }
         container.add(label, BorderLayout.WEST);
 

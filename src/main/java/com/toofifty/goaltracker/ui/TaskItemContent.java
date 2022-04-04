@@ -1,9 +1,10 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.TaskUIStatusManager;
 import com.toofifty.goaltracker.goal.Task;
 import com.toofifty.goaltracker.goal.TaskStatus;
+import com.toofifty.goaltracker.services.TaskCheckerService;
+import com.toofifty.goaltracker.services.TaskIconService;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -31,16 +32,18 @@ public class TaskItemContent extends JPanel implements Refreshable
         CROSS_MARK_ICON = new ImageIcon(crossMark);
     }
 
-    private final GoalTrackerPlugin plugin;
     private final Task task;
+    private final TaskIconService iconService;
+    private final TaskCheckerService checkerService;
     private final JLabel titleLabel = new JLabel();
     private final JLabel iconLabel = new JLabel(CROSS_MARK_ICON);
 
     TaskItemContent(GoalTrackerPlugin plugin, Task task)
     {
         super(new BorderLayout());
-        this.plugin = plugin;
         this.task = task;
+        iconService = plugin.getTaskIconService();
+        checkerService = plugin.getTaskCheckerService();
 
         titleLabel.setPreferredSize(new Dimension(0, 24));
         add(titleLabel, BorderLayout.CENTER);
@@ -50,13 +53,13 @@ public class TaskItemContent extends JPanel implements Refreshable
         iconWrapper.add(iconLabel, BorderLayout.NORTH);
         add(iconWrapper, BorderLayout.WEST);
 
-        TaskUIStatusManager.getInstance().addRefresher(task, this::refresh);
+        plugin.getUiStatusManager().addRefresher(task, this::refresh);
     }
 
     @Override
     public void refresh()
     {
-        TaskStatus status = task.check();
+        TaskStatus status = checkerService.check(task);
 
         titleLabel.setText(task.toString());
         titleLabel.setForeground(getForegroundColor(status));
@@ -64,12 +67,10 @@ public class TaskItemContent extends JPanel implements Refreshable
         if (status.isCompleted()) {
             iconLabel.setIcon(CHECK_MARK_ICON);
 
-        } else if (task.hasIcon()) {
-            iconLabel.setIcon(
-                new ImageIcon(task.getIcon().getScaledInstance(16, 16, 32)));
-
         } else {
-            iconLabel.setIcon(CROSS_MARK_ICON);
+            iconLabel.setIcon(
+                new ImageIcon(iconService.get(task)
+                    .getScaledInstance(16, 16, 32)));
 
         }
 

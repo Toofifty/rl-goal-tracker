@@ -2,10 +2,9 @@ package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.ItemTask;
 import com.toofifty.goaltracker.goal.factory.ItemTaskFactory;
 import com.toofifty.goaltracker.ui.SimpleDocumentListener;
-import com.toofifty.goaltracker.ui.TextButton;
+import com.toofifty.goaltracker.ui.components.TextButton;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.regex.Pattern;
@@ -24,7 +23,6 @@ import net.runelite.client.ui.components.FlatTextField;
 
 public class ItemTaskInput extends TaskInput
 {
-    private final Goal goal;
     private final ItemManager itemManager;
     private final ClientThread clientThread;
 
@@ -45,8 +43,7 @@ public class ItemTaskInput extends TaskInput
 
     public ItemTaskInput(GoalTrackerPlugin plugin, Goal goal)
     {
-        super(plugin, "Item");
-        this.goal = goal;
+        super(plugin, goal, "Item");
         this.itemManager = plugin.getItemManager();
         this.clientThread = plugin.getClientThread();
 
@@ -125,13 +122,19 @@ public class ItemTaskInput extends TaskInput
             return;
         }
 
-        ItemTask task = new ItemTaskFactory(plugin, goal)
-            .create(selectedItem.getId(), selectedItem.getName(),
-                Integer.parseInt(quantityField.getText()));
-        goal.add(task);
+        addTask(factory(ItemTaskFactory.class).create(
+            selectedItem.getId(),
+            selectedItem.getName(),
+            Integer.parseInt(quantityField.getText())
+        ));
+    }
 
-        getUpdater().run();
-        reset();
+    @Override
+    protected void reset()
+    {
+        clearSelectedItem();
+        quantityFieldValue = "1";
+        quantityField.setText(quantityFieldValue);
     }
 
     private void clearSelectedItem()
@@ -143,13 +146,5 @@ public class ItemTaskInput extends TaskInput
 
         revalidate();
         repaint();
-    }
-
-    @Override
-    protected void reset()
-    {
-        clearSelectedItem();
-        quantityFieldValue = "1";
-        quantityField.setText(quantityFieldValue);
     }
 }

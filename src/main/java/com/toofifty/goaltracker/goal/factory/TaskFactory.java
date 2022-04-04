@@ -1,28 +1,18 @@
 package com.toofifty.goaltracker.goal.factory;
 
 import com.google.gson.JsonObject;
-import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.Task;
 import com.toofifty.goaltracker.goal.TaskStatus;
 
-abstract public class TaskFactory
+abstract public class TaskFactory<T extends Task>
 {
-    protected final GoalTrackerPlugin plugin;
-    protected final Goal goal;
-
-    public TaskFactory(GoalTrackerPlugin plugin, Goal goal)
+    public T create(JsonObject json)
     {
-        this.plugin = plugin;
-        this.goal = goal;
-    }
+        T task = create();
 
-    public Task createFromJson(JsonObject json)
-    {
-        Task task = createObjectFromJson(json);
         task.setResult(TaskStatus.valueOf(json.get("previous_result").getAsString().toUpperCase()));
         return task;
     }
 
-    abstract protected Task createObjectFromJson(JsonObject json);
+    public abstract T create();
 }

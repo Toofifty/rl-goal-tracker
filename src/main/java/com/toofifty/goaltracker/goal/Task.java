@@ -1,39 +1,20 @@
 package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
-import java.awt.image.BufferedImage;
+import com.toofifty.goaltracker.goal.factory.TaskFactory;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 public abstract class Task
 {
-    @Setter
     @Getter
     protected TaskStatus result = TaskStatus.NOT_STARTED;
 
+    @Accessors(fluent = true)
+    @Setter
     @Getter
-    private Goal goal;
     private boolean hasBeenNotified = false;
-
-    public Task(Goal goal)
-    {
-        this.goal = goal;
-    }
-
-    public void hasBeenNotified(Boolean hasBeenNotified)
-    {
-        this.hasBeenNotified = hasBeenNotified;
-    }
-
-    public boolean hasBeenNotified()
-    {
-        return hasBeenNotified;
-    }
-
-    public TaskStatus check()
-    {
-        return result;
-    }
 
     @Override
     abstract public String toString();
@@ -51,16 +32,10 @@ public abstract class Task
 
     abstract protected JsonObject addSerializedProperties(JsonObject json);
 
-    public boolean hasIcon()
+    abstract public Class<? extends TaskFactory<? extends Task>> getFactoryClass();
+
+    public TaskStatus setResult(TaskStatus result)
     {
-        return this.getIcon() != null;
+        return this.result = result;
     }
-
-    abstract public BufferedImage getIcon();
-
-    public void save()
-    {
-        goal.save();
-    }
-
 }

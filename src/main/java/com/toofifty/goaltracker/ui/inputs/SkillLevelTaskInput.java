@@ -2,10 +2,9 @@ package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.SkillLevelTask;
 import com.toofifty.goaltracker.goal.factory.SkillLevelTaskFactory;
-import com.toofifty.goaltracker.ui.ComboBox;
 import com.toofifty.goaltracker.ui.SimpleDocumentListener;
+import com.toofifty.goaltracker.ui.components.ComboBox;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.regex.Pattern;
@@ -18,7 +17,6 @@ import net.runelite.client.ui.components.FlatTextField;
 
 public class SkillLevelTaskInput extends TaskInput
 {
-    private Goal goal;
 
     private FlatTextField levelField;
     private String levelFieldValue = "99";
@@ -29,8 +27,7 @@ public class SkillLevelTaskInput extends TaskInput
 
     public SkillLevelTaskInput(GoalTrackerPlugin plugin, Goal goal)
     {
-        super(plugin, "Skill level");
-        this.goal = goal;
+        super(plugin, goal, "Skill level");
 
         levelField = new FlatTextField();
         levelField.setBorder(new EmptyBorder(0, 8, 0, 8));
@@ -62,14 +59,10 @@ public class SkillLevelTaskInput extends TaskInput
             return;
         }
 
-        SkillLevelTask task = new SkillLevelTaskFactory(plugin, goal).create(
+        addTask(factory(SkillLevelTaskFactory.class).create(
             (Skill) skillField.getSelectedItem(),
             Integer.parseInt(levelField.getText())
-        );
-        goal.add(task);
-
-        getUpdater().run();
-        reset();
+        ));
     }
 
     @Override

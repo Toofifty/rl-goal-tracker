@@ -1,19 +1,13 @@
 package com.toofifty.goaltracker.goal;
 
 import com.google.gson.JsonObject;
-import java.awt.image.BufferedImage;
+import com.toofifty.goaltracker.goal.factory.SkillXpTaskFactory;
 import lombok.Getter;
 import lombok.Setter;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
 import net.runelite.api.Skill;
-import net.runelite.client.game.SkillIconManager;
 
 public class SkillXpTask extends Task
 {
-    private final Client client;
-    private final SkillIconManager skillIconManager;
-
     @Getter
     @Setter
     private Skill skill;
@@ -21,24 +15,6 @@ public class SkillXpTask extends Task
     @Getter
     @Setter
     private int xp;
-
-    public SkillXpTask(
-        Client client, SkillIconManager skillIconManager, Goal goal)
-    {
-        super(goal);
-        this.client = client;
-        this.skillIconManager = skillIconManager;
-    }
-
-    @Override
-    public TaskStatus check()
-    {
-        if (client.getGameState() != GameState.LOGGED_IN) {
-            return result;
-        }
-
-        return result = (client.getSkillExperience(skill) >= xp ? TaskStatus.COMPLETED : TaskStatus.NOT_STARTED);
-    }
 
     @Override
     public String toString()
@@ -61,8 +37,8 @@ public class SkillXpTask extends Task
     }
 
     @Override
-    public BufferedImage getIcon()
+    public Class<SkillXpTaskFactory> getFactoryClass()
     {
-        return skillIconManager.getSkillImage(skill);
+        return SkillXpTaskFactory.class;
     }
 }

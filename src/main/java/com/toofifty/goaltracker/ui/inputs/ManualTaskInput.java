@@ -2,7 +2,6 @@ package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.ManualTask;
 import com.toofifty.goaltracker.goal.factory.ManualTaskFactory;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
@@ -17,7 +16,7 @@ public class ManualTaskInput extends TaskInput
 
     public ManualTaskInput(GoalTrackerPlugin plugin, Goal goal)
     {
-        super(plugin, "Quick add");
+        super(plugin, goal, "Quick add");
         this.goal = goal;
 
         titleField = new FlatTextField();
@@ -44,12 +43,9 @@ public class ManualTaskInput extends TaskInput
             return;
         }
 
-        ManualTask task = new ManualTaskFactory(plugin, goal).create(
-            titleField.getText(), false);
-        goal.add(task);
-
-        getUpdater().run();
-        reset();
+        addTask(factory(ManualTaskFactory.class).create(
+            titleField.getText())
+        );
     }
 
     @Override

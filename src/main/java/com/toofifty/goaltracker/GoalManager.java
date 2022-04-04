@@ -1,25 +1,27 @@
 package com.toofifty.goaltracker;
 
 import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.SkillLevelTask;
 import com.toofifty.goaltracker.goal.Task;
 import com.toofifty.goaltracker.goal.TaskType;
+import com.toofifty.goaltracker.goal.factory.GoalFactory;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class GoalManager implements ReorderableList<Goal>
 {
-    private List<Goal> goals;
+    private List<Goal> goals = new ArrayList<>();
 
+    @Inject
     private GoalTrackerConfig config;
 
+    @Inject
     private GoalSerializer goalSerializer;
 
-    public GoalManager(GoalTrackerPlugin plugin)
-    {
-        config = plugin.getConfig();
-        goalSerializer = new GoalSerializer(plugin);
-    }
+    @Inject
+    private GoalFactory goalFactory;
 
     public void save()
     {
@@ -28,37 +30,14 @@ public class GoalManager implements ReorderableList<Goal>
         System.out.println("Saved " + goals.size() + " goals");
     }
 
-    public void load()
-    {
-        try {
-            goals = goalSerializer.deserialize(this, config.goalTrackerData());
-        } catch (Exception e) {
-            goals = new ArrayList<>();
-        }
-
-        System.out.println("Loaded " + goals.size() + " goals");
-    }
-
     public Goal createGoal()
     {
-        Goal goal = new Goal(this);
+        Goal goal = goalFactory.create();
         add(goal);
         return goal;
     }
 
-    public List<SkillLevelTask> getAllSkillTasks()
-    {
-        List<SkillLevelTask> tasks = new ArrayList<>();
-        for (Goal goal : goals) {
-            for (Task task : goal.getAll()) {
-                if (task instanceof SkillLevelTask) {
-                    tasks.add((SkillLevelTask) task);
-                }
-            }
-        }
-        return tasks;
-    }
-
+    @SuppressWarnings("unchecked")
     public <T> List<T> getAllIncompleteTasksOfType(TaskType type)
     {
         List<T> tasks = new ArrayList<>();
@@ -72,11 +51,10 @@ public class GoalManager implements ReorderableList<Goal>
         return tasks;
     }
 
-
     @Override
     public List<Goal> getAll()
     {
-        return this.goals;
+        return goals;
     }
 
     @Override
@@ -123,5 +101,16 @@ public class GoalManager implements ReorderableList<Goal>
     public Boolean isLast(Goal goal)
     {
         return goals.get(goals.size() - 1) == goal;
+    }
+
+    public void load()
+    {
+        try {
+            goals = goalSerializer.deserialize(config.goalTrackerData());
+        } catch (Exception e) {
+            goals = new ArrayList<>();
+        }
+
+        System.out.println("Loaded " + goals.size() + " goals");
     }
 }

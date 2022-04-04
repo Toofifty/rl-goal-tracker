@@ -2,6 +2,7 @@ package com.toofifty.goaltracker.goal;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.runelite.api.QuestState;
 
 @AllArgsConstructor
 public enum TaskStatus
@@ -12,6 +13,17 @@ public enum TaskStatus
 
     @Getter
     private final String name;
+
+    public static TaskStatus fromQuestState(QuestState questState)
+    {
+        switch (questState) {
+            case IN_PROGRESS:
+                return TaskStatus.IN_PROGRESS;
+            case FINISHED:
+                return TaskStatus.COMPLETED;
+        }
+        return TaskStatus.NOT_STARTED;
+    }
 
     public boolean isCompleted()
     {

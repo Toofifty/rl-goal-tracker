@@ -2,6 +2,7 @@ package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
+import com.toofifty.goaltracker.ui.components.TextButton;
 import com.toofifty.goaltracker.ui.inputs.ItemTaskInput;
 import com.toofifty.goaltracker.ui.inputs.ManualTaskInput;
 import com.toofifty.goaltracker.ui.inputs.QuestTaskInput;
@@ -16,12 +17,12 @@ import net.runelite.client.ui.ColorScheme;
 
 public class NewTaskPanel extends JPanel
 {
+    private final TextButton moreOptionsButton;
     private final GoalTrackerPlugin plugin;
     private final Goal goal;
 
-    private Runnable updater;
-    private TextButton moreOptionsButton;
     private JPanel moreOptionsPanel;
+    private Runnable updater;
 
     NewTaskPanel(GoalTrackerPlugin plugin, Goal goal)
     {
@@ -30,6 +31,7 @@ public class NewTaskPanel extends JPanel
         this.goal = goal;
 
         setLayout(new GridBagLayout());
+        setBackground(ColorScheme.DARK_GRAY_COLOR);
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -38,10 +40,7 @@ public class NewTaskPanel extends JPanel
         constraints.gridy = 0;
         constraints.ipady = 8;
 
-        add(
-            new ManualTaskInput(plugin, goal).onUpdate(() -> updater.run()),
-            constraints
-        );
+        add(new ManualTaskInput(plugin, goal).onUpdate(this::update), constraints);
         constraints.gridy++;
 
         moreOptionsButton = new TextButton("+ More options");
@@ -54,6 +53,7 @@ public class NewTaskPanel extends JPanel
             }
         });
         JPanel moreOptionsButtonPanel = new JPanel(new BorderLayout());
+        moreOptionsButtonPanel.setBackground(ColorScheme.DARK_GRAY_COLOR);
         moreOptionsButtonPanel.add(moreOptionsButton, BorderLayout.WEST);
 
         add(moreOptionsButtonPanel, constraints);
@@ -61,6 +61,11 @@ public class NewTaskPanel extends JPanel
 
         createMoreOptionsPanel();
         add(moreOptionsPanel, constraints);
+    }
+
+    private void update()
+    {
+        updater.run();
     }
 
     private void hideMoreOptions()
@@ -90,29 +95,18 @@ public class NewTaskPanel extends JPanel
 
         moreOptionsPanel = new JPanel(new GridBagLayout());
         moreOptionsPanel.setVisible(false);
+        moreOptionsPanel.setBackground(ColorScheme.DARK_GRAY_COLOR);
 
-        moreOptionsPanel.add(
-            new SkillLevelTaskInput(plugin, goal).onUpdate(() -> updater.run()),
-            constraints
-        );
+        moreOptionsPanel.add(new SkillLevelTaskInput(plugin, goal).onUpdate(this::update), constraints);
         constraints.gridy++;
 
-        moreOptionsPanel.add(
-            new SkillXpTaskInput(plugin, goal).onUpdate(() -> updater.run()),
-            constraints
-        );
+        moreOptionsPanel.add(new SkillXpTaskInput(plugin, goal).onUpdate(this::update), constraints);
         constraints.gridy++;
 
-        moreOptionsPanel.add(
-            new QuestTaskInput(plugin, goal).onUpdate(() -> updater.run()),
-            constraints
-        );
+        moreOptionsPanel.add(new QuestTaskInput(plugin, goal).onUpdate(this::update), constraints);
         constraints.gridy++;
 
-        moreOptionsPanel.add(
-            new ItemTaskInput(plugin, goal).onUpdate(() -> updater.run()),
-            constraints
-        );
+        moreOptionsPanel.add(new ItemTaskInput(plugin, goal).onUpdate(this::update), constraints);
         constraints.gridy++;
     }
 

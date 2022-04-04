@@ -1,11 +1,13 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.TaskUIStatusManager;
 import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ManualTask;
 import com.toofifty.goaltracker.goal.Task;
-import com.toofifty.goaltracker.goal.TaskType;
+import com.toofifty.goaltracker.ui.components.EditableInput;
+import com.toofifty.goaltracker.ui.components.ListItemPanel;
+import com.toofifty.goaltracker.ui.components.ListPanel;
+import com.toofifty.goaltracker.ui.components.TextButton;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -13,43 +15,43 @@ import net.runelite.client.ui.ColorScheme;
 
 public class GoalPanel extends JPanel implements Refreshable
 {
-    private EditableInput descriptionInput;
-    private ListPanel<Task> taskListPanel;
-    private Goal goal;
+    private final GoalTrackerPlugin plugin;
+    private final Goal goal;
+
+    private final EditableInput descriptionInput;
+    private final ListPanel<Task> taskListPanel;
 
     GoalPanel(GoalTrackerPlugin plugin, Goal goal, Runnable closeListener)
     {
         super();
+        this.plugin = plugin;
         this.goal = goal;
 
         setLayout(new BorderLayout());
 
-        descriptionInput = new EditableInput(goal::setDescription);
-
-        TextButton backButton = new TextButton(
-            "< Back", ColorScheme.PROGRESS_ERROR_COLOR);
-        backButton.onClick(e -> closeListener.run());
+        TextButton backButton = new TextButton("< Back", ColorScheme.PROGRESS_ERROR_COLOR);
+        backButton.onClick((e) -> closeListener.run());
 
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.add(descriptionInput, BorderLayout.CENTER);
         headerPanel.add(backButton, BorderLayout.WEST);
         headerPanel.setBorder(new EmptyBorder(0, 0, 8, 0));
-
         add(headerPanel, BorderLayout.NORTH);
+
+        descriptionInput = new EditableInput(null);
+        headerPanel.add(descriptionInput, BorderLayout.CENTER);
 
         taskListPanel = new ListPanel<>(goal, (task) -> {
             ListItemPanel<Task> taskPanel = new ListItemPanel<>(goal, task);
             taskPanel.add(new TaskItemContent(plugin, task));
             taskPanel.setBorder(new EmptyBorder(2, 4, 2, 4));
 
-            if (task.getType() == TaskType.MANUAL) {
+            if (task instanceof ManualTask) {
                 taskPanel.onClick(e -> {
                     ((ManualTask) task).toggle();
-                    if (task.check().isCompleted()) {
+                    if (plugin.getTaskCheckerService().check(task).isCompleted()) {
                         plugin.notifyTask(task);
                     }
-                    task.save();
-                    TaskUIStatusManager.getInstance().refresh(task);
+                    plugin.getUiStatusManager().refresh(task);
                 });
             }
 
@@ -60,12 +62,15 @@ public class GoalPanel extends JPanel implements Refreshable
         add(taskListPanel, BorderLayout.CENTER);
 
         NewTaskPanel newTaskPanel = new NewTaskPanel(plugin, goal);
-        newTaskPanel.onUpdate(() -> {
-            taskListPanel.tryBuildList();
-            taskListPanel.refresh();
-            plugin.setValidateAll(true);
-        });
+        newTaskPanel.onUpdate(this::updateFromNewTask);
         add(newTaskPanel, BorderLayout.SOUTH);
+    }
+
+    public void updateFromNewTask()
+    {
+        taskListPanel.tryBuildList();
+        taskListPanel.refresh();
+        plugin.setValidateAll(true);
     }
 
     @Override

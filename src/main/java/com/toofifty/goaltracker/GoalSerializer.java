@@ -8,25 +8,21 @@ import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.factory.GoalFactory;
 import java.util.ArrayList;
 import java.util.List;
+import javax.inject.Inject;
 
 public class GoalSerializer
 {
-    private final GoalFactory goalFactory;
+    @Inject
+    private GoalFactory goalFactory;
 
-    GoalSerializer(GoalTrackerPlugin plugin)
-    {
-        goalFactory = new GoalFactory(plugin);
-    }
-
-    public List<Goal> deserialize(
-        GoalManager goalManager, String serialized) throws Exception
+    public List<Goal> deserialize(String serialized) throws Exception
     {
         List<Goal> goals = new ArrayList<>();
         JsonArray json = new JsonParser().parse(serialized).getAsJsonArray();
 
         for (JsonElement item : json) {
             JsonObject obj = item.getAsJsonObject();
-            goals.add(goalFactory.create(goalManager, obj));
+            goals.add(goalFactory.create(obj));
         }
 
         return goals;

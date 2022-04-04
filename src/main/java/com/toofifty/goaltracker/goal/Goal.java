@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.toofifty.goaltracker.GoalManager;
 import com.toofifty.goaltracker.ReorderableList;
+import com.toofifty.goaltracker.services.TaskCheckerService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -25,16 +26,18 @@ public class Goal implements ReorderableList<Task>
     private List<Task> tasks = new ArrayList<>();
 
     private GoalManager goalManager;
+    private TaskCheckerService taskCheckerService;
 
-    public Goal(GoalManager goalManager)
+    public Goal(GoalManager goalManager, TaskCheckerService taskCheckerService)
     {
         this.goalManager = goalManager;
+        this.taskCheckerService = taskCheckerService;
     }
 
 
     public List<Task> getIncomplete()
     {
-        return filterBy(task -> !task.check().isCompleted());
+        return filterBy(task -> !taskCheckerService.check(task).isCompleted());
     }
 
     private List<Task> filterBy(Predicate<Task> predicate)
@@ -49,7 +52,7 @@ public class Goal implements ReorderableList<Task>
 
     public List<Task> getComplete()
     {
-        return filterBy(task -> task.check().isCompleted());
+        return filterBy(task -> taskCheckerService.check(task).isCompleted());
     }
 
     public Boolean isInProgress()

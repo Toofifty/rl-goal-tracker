@@ -2,10 +2,9 @@ package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.SkillXpTask;
 import com.toofifty.goaltracker.goal.factory.SkillXpTaskFactory;
-import com.toofifty.goaltracker.ui.ComboBox;
 import com.toofifty.goaltracker.ui.SimpleDocumentListener;
+import com.toofifty.goaltracker.ui.components.ComboBox;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.regex.Pattern;
@@ -18,8 +17,6 @@ import net.runelite.client.ui.components.FlatTextField;
 
 public class SkillXpTaskInput extends TaskInput
 {
-    private final Goal goal;
-
     private final FlatTextField xpField;
     private final ComboBox<Skill> skillField;
     private final Pattern numberPattern = Pattern.compile("^(?:\\d+)?$");
@@ -29,8 +26,7 @@ public class SkillXpTaskInput extends TaskInput
 
     public SkillXpTaskInput(GoalTrackerPlugin plugin, Goal goal)
     {
-        super(plugin, "Skill XP");
-        this.goal = goal;
+        super(plugin, goal, "Skill XP");
 
         xpField = new FlatTextField();
         xpField.setBorder(new EmptyBorder(0, 8, 0, 8));
@@ -81,14 +77,10 @@ public class SkillXpTaskInput extends TaskInput
             return;
         }
 
-        SkillXpTask task = new SkillXpTaskFactory(plugin, goal).create(
+        addTask(factory(SkillXpTaskFactory.class).create(
             (Skill) skillField.getSelectedItem(),
             Integer.parseInt(xpField.getText())
-        );
-        goal.add(task);
-
-        getUpdater().run();
-        reset();
+        ));
     }
 
     @Override

@@ -1,30 +1,30 @@
 package com.toofifty.goaltracker.goal.factory;
 
 import com.google.gson.JsonObject;
-import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
 import com.toofifty.goaltracker.goal.ItemTask;
 
-public class ItemTaskFactory extends TaskFactory
+public class ItemTaskFactory extends TaskFactory<ItemTask>
 {
-    public ItemTaskFactory(GoalTrackerPlugin plugin, Goal goal)
+    @Override
+    public ItemTask create(JsonObject json)
     {
-        super(plugin, goal);
+        return create(
+            json.get("item_id").getAsInt(),
+            json.get("item_name").getAsString(),
+            json.get("quantity").getAsInt(),
+            json.get("acquired").getAsInt()
+        );
     }
 
     @Override
-    protected ItemTask createObjectFromJson(JsonObject json)
+    public ItemTask create()
     {
-        return create(
-            json.get("item_id").getAsInt(), json.get("item_name").getAsString(),
-            json.get("quantity").getAsInt(), json.get("acquired").getAsInt());
+        return new ItemTask();
     }
 
     public ItemTask create(int itemId, String itemName, int quantity, int acquired)
     {
-
-        ItemTask task = new ItemTask(plugin.getClient(), plugin.getItemManager(), plugin.getItemCache(), goal);
-
+        ItemTask task = create();
         task.setItemId(itemId);
         task.setItemName(itemName);
         task.setQuantity(quantity);

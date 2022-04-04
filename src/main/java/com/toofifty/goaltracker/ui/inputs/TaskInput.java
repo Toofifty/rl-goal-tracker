@@ -1,7 +1,10 @@
 package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.ui.TextButton;
+import com.toofifty.goaltracker.goal.Goal;
+import com.toofifty.goaltracker.goal.Task;
+import com.toofifty.goaltracker.goal.factory.TaskFactory;
+import com.toofifty.goaltracker.ui.components.TextButton;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -16,15 +19,17 @@ public abstract class TaskInput extends JPanel
 {
     protected final int PREFERRED_INPUT_HEIGHT = 16;
     protected GoalTrackerPlugin plugin;
+    private Goal goal;
     @Getter
     private Runnable updater;
     @Getter
     private JPanel inputRow;
 
-    TaskInput(GoalTrackerPlugin plugin, String title)
+    TaskInput(GoalTrackerPlugin plugin, Goal goal, String title)
     {
         super(new GridBagLayout());
         this.plugin = plugin;
+        this.goal = goal;
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
@@ -58,11 +63,23 @@ public abstract class TaskInput extends JPanel
 
     abstract protected void onSubmit();
 
+    protected <T extends TaskFactory<?>> T factory(Class<T> factoryClass)
+    {
+        return plugin.getTaskFactoryService().get(factoryClass);
+    }
+
+    public void addTask(Task task)
+    {
+        goal.add(task);
+        updater.run();
+        reset();
+    }
+
+    abstract protected void reset();
+
     public TaskInput onUpdate(Runnable updater)
     {
         this.updater = updater;
         return this;
     }
-
-    abstract protected void reset();
 }

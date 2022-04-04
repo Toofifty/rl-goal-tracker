@@ -1,7 +1,6 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.TaskUIStatusManager;
 import com.toofifty.goaltracker.goal.Goal;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,7 +25,7 @@ public class GoalItemContent extends JPanel implements Refreshable
         add(title, BorderLayout.WEST);
         add(progress, BorderLayout.EAST);
 
-        TaskUIStatusManager.getInstance().addRefresher(goal, this::refresh);
+        plugin.getUiStatusManager().addRefresher(goal, this::refresh);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.toofifty.goaltracker.ui;
+package com.toofifty.goaltracker.ui.components;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -30,17 +30,17 @@ public class TextButton extends JLabel
         setForeground(mainColor);
     }
 
-    public TextButton(String text, Consumer<MouseEvent> clickListener)
-    {
-        this(text);
-        onClick(clickListener);
-    }
-
     public TextButton setMainColor(Color mainColor)
     {
         this.mainColor = mainColor;
         setForeground(mainColor);
         return this;
+    }
+
+    public TextButton(String text, Consumer<MouseEvent> clickListener)
+    {
+        this(text);
+        onClick(clickListener);
     }
 
     public TextButton onClick(Consumer<MouseEvent> clickListener)

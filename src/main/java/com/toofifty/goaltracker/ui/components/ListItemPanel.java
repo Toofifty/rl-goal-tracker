@@ -1,6 +1,7 @@
-package com.toofifty.goaltracker.ui;
+package com.toofifty.goaltracker.ui.components;
 
 import com.toofifty.goaltracker.ReorderableList;
+import com.toofifty.goaltracker.ui.Refreshable;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -29,7 +30,7 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
     @Setter
     private Runnable runOnReorder;
 
-    ListItemPanel(ReorderableList<T> list, T item)
+    public ListItemPanel(ReorderableList<T> list, T item)
     {
         super(new BorderLayout());
         this.list = list;
