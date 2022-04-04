@@ -120,7 +120,9 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
             @Override
             public void mousePressed(MouseEvent e)
             {
-                clickListener.accept(e);
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    clickListener.accept(e);
+                }
             }
 
             @Override
