@@ -41,6 +41,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.NavigationButton;
+import net.runelite.client.util.AsyncBufferedImage;
 
 @Slf4j
 @PluginDescriptor(name = "Goal Tracker", description = "Keep track of your goals and complete them automatically")
@@ -115,17 +116,18 @@ public class GoalTrackerPlugin extends Plugin
         itemCache.load();
         goalTrackerPanel.home();
 
-        final BufferedImage icon = itemManager.getImage(ItemID.TODO_LIST);
+        final AsyncBufferedImage icon = itemManager.getImage(ItemID.TODO_LIST);
 
-        uiNavigationButton = NavigationButton.builder()
-            .tooltip("Goal Tracker")
-            .icon(icon)
-            .priority(7)
-            .panel(goalTrackerPanel)
-            .build();
+        icon.onLoaded(() -> {
+            uiNavigationButton = NavigationButton.builder()
+                .tooltip("Goal Tracker")
+                .icon(icon)
+                .priority(7)
+                .panel(goalTrackerPanel)
+                .build();
 
-        clientToolbar.addNavigation(uiNavigationButton);
-
+            clientToolbar.addNavigation(uiNavigationButton);
+        });
     }
 
     @Override
