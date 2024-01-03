@@ -119,12 +119,12 @@ public class Goal implements ReorderableList<Task>
     @Override
     public Boolean isFirst(Task task)
     {
-        return tasks.get(0) == task;
+        return !tasks.isEmpty() && tasks.get(0) == task;
     }
 
     @Override
     public Boolean isLast(Task task)
     {
-        return tasks.get(tasks.size() - 1) == task;
+        return !tasks.isEmpty() && tasks.get(tasks.size() - 1) == task;
     }
 }

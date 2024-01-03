@@ -56,7 +56,6 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
 
         setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_NEVER);
         tryBuildList();
-        tryBuildPlaceholder();
     }
 
     public void setGap(int gap)
@@ -64,14 +63,12 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
         this.gap = gap;
         setBorder(new EmptyBorder(4, 4, 4 - gap, 4));
         tryBuildList();
-        tryBuildPlaceholder();
     }
 
     public void setPlaceholder(String placeholder)
     {
         this.placeholder = placeholder;
         tryBuildList();
-        tryBuildPlaceholder();
     }
 
     private List<ListItemPanel<T>> buildItemPanels()
@@ -102,7 +99,6 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
         ListItemPanel<T> itemPanel = renderItem.apply(item);
         itemPanel.setRunOnReorder(() -> {
             tryBuildList();
-            tryBuildPlaceholder();
         });
 
         itemPanelMap.put(item, itemPanel);
@@ -135,7 +131,10 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
         }
     }
 
-    private void tryBuildPlaceholder()
+    /**
+     * Build the initial list, if items are provided otherwise build a placeholder
+     */
+    public void tryBuildList()
     {
         if (reorderableList.getAll().isEmpty()) {
             listPanel.removeAll();
@@ -146,15 +145,7 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
             placeholderPanel.setBackground(ColorScheme.DARK_GRAY_COLOR);
             placeholderPanel.add(placeholderLabel);
             listPanel.add(placeholderPanel, getConstraints());
-        }
-    }
-
-    /**
-     * Build the initial list, if items are provided
-     */
-    public void tryBuildList()
-    {
-        if (!reorderableList.getAll().isEmpty()) {
+        } else {
             listPanel.removeAll();
 
             GridBagConstraints constraints = getConstraints();
@@ -162,9 +153,9 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
                 listPanel.add(component, constraints);
                 constraints.gridy++;
             });
-
-            refreshChildMenus();
-            revalidate();
         }
+
+        refreshChildMenus();
+        revalidate();
     }
 }
