@@ -64,8 +64,8 @@ public class ItemTask extends Task
         return ItemTaskFactory.class;
     }
 
-    public BufferedImage setCachedIcon(BufferedImage cachedIcon)
+    public void setCachedIcon(BufferedImage cachedIcon)
     {
-        return this.cachedIcon = cachedIcon;
+        this.cachedIcon = cachedIcon;
     }
 }

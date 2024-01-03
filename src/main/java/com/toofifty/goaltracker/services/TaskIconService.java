@@ -83,14 +83,10 @@ public class TaskIconService
 
     public BufferedImage get(ItemTask task)
     {
-        if (task.getCachedIcon() != null) {
-            return task.getCachedIcon();
+        if (task.getCachedIcon() == null) {
+            task.setCachedIcon(itemManager.getImage(task.getItemId()));
         }
 
-        if (!client.isClientThread()) {
-            return null;
-        }
-
-        return task.setCachedIcon(itemManager.getImage(task.getItemId()));
+        return task.getCachedIcon();
     }
 }
