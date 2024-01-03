@@ -11,7 +11,11 @@ import com.toofifty.goaltracker.services.TaskCheckerService;
 import com.toofifty.goaltracker.services.TaskFactoryService;
 import com.toofifty.goaltracker.services.TaskIconService;
 import com.toofifty.goaltracker.ui.GoalTrackerPanel;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
+
 import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.InventoryID;
 import net.runelite.api.ItemID;
 import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
@@ -46,6 +51,14 @@ import net.runelite.client.util.AsyncBufferedImage;
 @PluginDescriptor(name = "Goal Tracker", description = "Keep track of your goals and complete them automatically")
 public class GoalTrackerPlugin extends Plugin
 {
+    public static final int[] PLAYER_INVENTORIES = {
+        InventoryID.INVENTORY.getId(),
+        InventoryID.EQUIPMENT.getId(),
+        InventoryID.BANK.getId(),
+        InventoryID.SEED_VAULT.getId(),
+        InventoryID.GROUP_STORAGE.getId()
+    };
+
     @Getter
     @Inject
     private Client client;
@@ -228,6 +241,8 @@ public class GoalTrackerPlugin extends Plugin
     @Subscribe
     public void onItemContainerChanged(ItemContainerChanged event)
     {
+        if (IntStream.of(GoalTrackerPlugin.PLAYER_INVENTORIES).noneMatch((id) -> id == event.getContainerId())) return;
+
         itemCache.update(event.getContainerId(), event.getItemContainer().getItems());
 
         List<ItemTask> itemTasks = goalManager.getAllIncompleteTasksOfType(TaskType.ITEM);
