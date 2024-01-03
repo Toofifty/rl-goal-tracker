@@ -11,7 +11,6 @@ import com.toofifty.goaltracker.services.TaskCheckerService;
 import com.toofifty.goaltracker.services.TaskFactoryService;
 import com.toofifty.goaltracker.services.TaskIconService;
 import com.toofifty.goaltracker.ui.GoalTrackerPanel;
-import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.inject.Inject;
 import lombok.Getter;

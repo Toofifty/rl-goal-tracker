@@ -21,8 +21,9 @@ public enum TaskStatus
                 return TaskStatus.IN_PROGRESS;
             case FINISHED:
                 return TaskStatus.COMPLETED;
+            default:
+                return TaskStatus.NOT_STARTED;
         }
-        return TaskStatus.NOT_STARTED;
     }
 
     public boolean isCompleted()

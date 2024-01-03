@@ -84,8 +84,9 @@ public class TaskItemContent extends JPanel implements Refreshable
                 return ColorScheme.PROGRESS_INPROGRESS_COLOR;
             case COMPLETED:
                 return ColorScheme.PROGRESS_COMPLETE_COLOR;
+            default:
+                return ColorScheme.PROGRESS_ERROR_COLOR;
         }
-        return ColorScheme.PROGRESS_ERROR_COLOR;
     }
 
     @Override
