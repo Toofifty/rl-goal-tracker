@@ -1,0 +1,33 @@
+name: 🐛 Bug Report
+description: Found a bug? Tell us about it!
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: A details list of steps to reproduce your issue!
+    validations:
+      required: true
+  - type: input
+    id: expected-results
+    attributes:
+      label: Expected Results
+      description: Tell us what you expected to happen!
+    validations:
+      required: true
+  - type: input
+    id: actual-results
+    attributes:
+      label: Actual Results
+      description: Tell us what actually happened!
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "Thanks for completing our form!"

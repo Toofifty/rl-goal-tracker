@@ -1,0 +1,19 @@
+name: 🚀 Feature Request
+description: Request a new feature!
+title: "[Feature Request]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to submit a feature request!
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe your feature request to us!
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: "Thanks for completing our form!"
