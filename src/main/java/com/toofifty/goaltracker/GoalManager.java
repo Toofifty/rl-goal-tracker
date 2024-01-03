@@ -61,12 +61,14 @@ public class GoalManager implements ReorderableList<Goal>
     public void add(Goal goal)
     {
         goals.add(goal);
+        this.save();
     }
 
     @Override
     public void remove(Goal goal)
     {
         goals.remove(goal);
+        this.save();
     }
 
     @Override
@@ -75,6 +77,7 @@ public class GoalManager implements ReorderableList<Goal>
         int index = goals.indexOf(goal);
         goals.remove(goal);
         goals.add(index + offset, goal);
+        this.save();
     }
 
     @Override
@@ -82,6 +85,7 @@ public class GoalManager implements ReorderableList<Goal>
     {
         goals.remove(goal);
         goals.add(0, goal);
+        this.save();
     }
 
     @Override
@@ -89,6 +93,7 @@ public class GoalManager implements ReorderableList<Goal>
     {
         goals.remove(goal);
         goals.add(goal);
+        this.save();
     }
 
     @Override

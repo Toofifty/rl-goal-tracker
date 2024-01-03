@@ -2,6 +2,9 @@ package com.toofifty.goaltracker.ui.components;
 
 import com.toofifty.goaltracker.ReorderableList;
 import com.toofifty.goaltracker.ui.Refreshable;
+
+import lombok.Setter;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -30,11 +33,13 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
 
     private int gap = 2;
     private String placeholder = "Nothing interesting happens.";
+    @Setter
+    private Runnable onUpdate;
 
     public ListPanel(
         ReorderableList<T> reorderableList,
-        Function<T, ListItemPanel<T>> renderItem)
-    {
+        Function<T, ListItemPanel<T>> renderItem
+    ) {
         super();
         this.reorderableList = reorderableList;
         this.renderItem = renderItem;
@@ -99,6 +104,10 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
         ListItemPanel<T> itemPanel = renderItem.apply(item);
         itemPanel.setRunOnReorder(() -> {
             tryBuildList();
+
+            if (this.onUpdate == null) return;
+            
+            this.onUpdate.run();
         });
 
         itemPanelMap.put(item, itemPanel);

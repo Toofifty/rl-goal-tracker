@@ -132,9 +132,6 @@ public class GoalTrackerPlugin extends Plugin
     @Override
     protected void shutDown()
     {
-        goalManager.save();
-        itemCache.save();
-
         clientToolbar.removeNavigation(uiNavigationButton);
     }
 
@@ -152,6 +149,7 @@ public class GoalTrackerPlugin extends Plugin
             if (event.getSkill() == task.getSkill() && event.getLevel() >= task.getLevel()) {
                 notifyTask(task);
                 uiStatusManager.refresh(task);
+                this.goalManager.save();
             }
         }
 
@@ -160,6 +158,7 @@ public class GoalTrackerPlugin extends Plugin
             if (event.getSkill() == task.getSkill() && event.getXp() >= task.getXp()) {
                 notifyTask(task);
                 uiStatusManager.refresh(task);
+                this.goalManager.save();
             }
         }
     }
@@ -220,6 +219,7 @@ public class GoalTrackerPlugin extends Plugin
                 if (taskCheckerService.check(task).isCompleted()) {
                     notifyTask(task);
                     uiStatusManager.refresh(task);
+                    this.goalManager.save();
                 }
             }
         }
@@ -238,6 +238,7 @@ public class GoalTrackerPlugin extends Plugin
 
             if (taskCheckerService.check(task).isCompleted()) {
                 notifyTask(task);
+                this.goalManager.save();
             }
 
             // always refresh item tasks, since the acquired

@@ -37,7 +37,10 @@ public class GoalPanel extends JPanel implements Refreshable
         headerPanel.setBorder(new EmptyBorder(0, 0, 8, 0));
         add(headerPanel, BorderLayout.NORTH);
 
-        descriptionInput = new EditableInput(null);
+        descriptionInput = new EditableInput((value) -> {
+            goal.setDescription(value);
+            goal.save();
+        });
         headerPanel.add(descriptionInput, BorderLayout.CENTER);
 
         taskListPanel = new ListPanel<>(goal, (task) -> {
@@ -52,6 +55,7 @@ public class GoalPanel extends JPanel implements Refreshable
                         plugin.notifyTask(task);
                     }
                     plugin.getUiStatusManager().refresh(task);
+                    this.goal.save();
                 });
             }
 
@@ -59,6 +63,7 @@ public class GoalPanel extends JPanel implements Refreshable
         });
         taskListPanel.setGap(0);
         taskListPanel.setPlaceholder("No tasks added yet");
+        taskListPanel.setOnUpdate(() -> this.goal.save());
         add(taskListPanel, BorderLayout.CENTER);
 
         NewTaskPanel newTaskPanel = new NewTaskPanel(plugin, goal);
@@ -71,6 +76,7 @@ public class GoalPanel extends JPanel implements Refreshable
         taskListPanel.tryBuildList();
         taskListPanel.refresh();
         plugin.setValidateAll(true);
+        goal.save();
     }
 
     @Override
