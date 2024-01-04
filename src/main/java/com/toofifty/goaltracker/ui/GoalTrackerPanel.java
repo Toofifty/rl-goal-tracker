@@ -2,22 +2,22 @@ package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.GoalManager;
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.task.Task;
 import com.toofifty.goaltracker.ui.components.ListItemPanel;
 import com.toofifty.goaltracker.ui.components.ListPanel;
 import com.toofifty.goaltracker.ui.components.TextButton;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 import net.runelite.client.ui.PluginPanel;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 @Singleton
 public class GoalTrackerPanel extends PluginPanel implements Refreshable
@@ -25,9 +25,11 @@ public class GoalTrackerPanel extends PluginPanel implements Refreshable
     private final JPanel mainPanel = new JPanel(new BorderLayout());
     private final ListPanel<Goal> goalListPanel;
     private final GoalTrackerPlugin plugin;
-
-    @Getter
-    private Goal currentGoal;
+    private GoalPanel goalPanel;
+    private Consumer<Goal> goalAddedListener;
+    private Consumer<Goal> goalUpdatedListener;
+    private Consumer<Task> taskAddedListener;
+    private Consumer<Task> taskUpdatedListener;
 
     @Inject
     public GoalTrackerPanel(GoalTrackerPlugin plugin, GoalManager goalManager)
@@ -46,7 +48,13 @@ public class GoalTrackerPanel extends PluginPanel implements Refreshable
 
         titlePanel.add(
             new TextButton("+ Add goal",
-                e -> view(goalManager.createGoal())
+                e -> {
+                    Goal goal = goalManager.createGoal();
+                    view(goal);
+
+                    if (Objects.nonNull(this.goalAddedListener)) this.goalAddedListener.accept(goal);
+                    if (Objects.nonNull(this.goalUpdatedListener)) this.goalUpdatedListener.accept(goal);
+                }
             ).narrow(), BorderLayout.EAST);
 
         JLabel title = new JLabel();
@@ -55,8 +63,8 @@ public class GoalTrackerPanel extends PluginPanel implements Refreshable
         title.setFont(FontManager.getRunescapeBoldFont());
         titlePanel.add(title, BorderLayout.WEST);
 
-        goalListPanel = new ListPanel<>(goalManager,
-            (goal) -> new ListItemPanel<>(goalManager, goal).onClick(e -> this.view(goal))
+        goalListPanel = new ListPanel<>(goalManager.getGoals(),
+            (goal) -> new ListItemPanel<>(goalManager.getGoals(), goal).onClick(e -> this.view(goal))
                 .add(new GoalItemContent(plugin, goal))
         );
         goalListPanel.setGap(0);
@@ -72,9 +80,14 @@ public class GoalTrackerPanel extends PluginPanel implements Refreshable
     {
         removeAll();
 
-        GoalPanel goalPanel = new GoalPanel(plugin, goal, this::home);
-        add(goalPanel, BorderLayout.CENTER);
-        goalPanel.refresh();
+        this.goalPanel = new GoalPanel(plugin, goal, this::home);
+
+        this.goalPanel.onGoalUpdated(this.goalUpdatedListener);
+        this.goalPanel.onTaskAdded(this.taskAddedListener);
+        this.goalPanel.onTaskUpdated(this.taskUpdatedListener);
+
+        add(this.goalPanel, BorderLayout.CENTER);
+        this.goalPanel.refresh();
 
         revalidate();
         repaint();
@@ -89,6 +102,8 @@ public class GoalTrackerPanel extends PluginPanel implements Refreshable
 
         revalidate();
         repaint();
+
+        this.goalPanel = null;
     }
 
     @Override
@@ -102,5 +117,34 @@ public class GoalTrackerPanel extends PluginPanel implements Refreshable
         }
 
         goalListPanel.refresh();
+    }
+
+    public void onGoalUpdated(Consumer<Goal> listener)
+    {
+        this.goalUpdatedListener = listener;
+
+        this.goalListPanel.onUpdated(this.goalUpdatedListener);
+
+        if (this.goalPanel != null) {
+            this.goalPanel.onGoalUpdated(this.goalUpdatedListener);
+        }
+    }
+
+    public void onTaskUpdated(Consumer<Task> listener)
+    {
+        this.taskUpdatedListener = listener;
+
+        if (this.goalPanel != null) {
+            this.goalPanel.onTaskUpdated(this.taskUpdatedListener);
+        }
+    }
+
+    public void onTaskAdded(Consumer<Task> listener)
+    {
+        this.taskAddedListener = listener;
+
+        if (this.goalPanel != null) {
+            this.goalPanel.onTaskAdded(this.taskAddedListener);
+        }
     }
 }

@@ -1,26 +1,18 @@
 package com.toofifty.goaltracker.ui.components;
 
-import com.toofifty.goaltracker.ReorderableList;
 import com.toofifty.goaltracker.ui.Refreshable;
+import com.toofifty.goaltracker.utils.ReorderableList;
+import net.runelite.client.ui.ColorScheme;
 
-import lombok.Setter;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.border.EmptyBorder;
-import net.runelite.client.ui.ColorScheme;
 
 public class ListPanel<T> extends JScrollPane implements Refreshable
 {
@@ -33,8 +25,7 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
 
     private int gap = 2;
     private String placeholder = "Nothing interesting happens.";
-    @Setter
-    private Runnable onUpdate;
+    private Consumer<T> updatedListener;
 
     public ListPanel(
         ReorderableList<T> reorderableList,
@@ -78,7 +69,7 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
 
     private List<ListItemPanel<T>> buildItemPanels()
     {
-        return reorderableList.getAll()
+        return reorderableList
             .stream()
             .map(this::buildItemPanel)
             .collect(Collectors.toList());
@@ -102,12 +93,17 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
         }
 
         ListItemPanel<T> itemPanel = renderItem.apply(item);
-        itemPanel.setRunOnReorder(() -> {
+
+        itemPanel.onReordered((updatedItem) -> {
             tryBuildList();
 
-            if (this.onUpdate == null) return;
-            
-            this.onUpdate.run();
+            this.updatedListener.accept(updatedItem);
+        });
+
+        itemPanel.onRemoved((updatedItem) -> {
+            tryBuildList();
+
+            this.updatedListener.accept(updatedItem);
         });
 
         itemPanelMap.put(item, itemPanel);
@@ -145,7 +141,7 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
      */
     public void tryBuildList()
     {
-        if (reorderableList.getAll().isEmpty()) {
+        if (reorderableList.isEmpty()) {
             listPanel.removeAll();
 
             JLabel placeholderLabel = new JLabel(placeholder);
@@ -166,5 +162,9 @@ public class ListPanel<T> extends JScrollPane implements Refreshable
 
         refreshChildMenus();
         revalidate();
+    }
+
+    public void onUpdated(Consumer<T> listener) {
+        this.updatedListener = listener;
     }
 }

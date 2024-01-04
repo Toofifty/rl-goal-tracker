@@ -1,6 +1,6 @@
 package com.toofifty.goaltracker.ui.components;
 
-import com.toofifty.goaltracker.ReorderableList;
+import com.toofifty.goaltracker.utils.ReorderableList;
 import com.toofifty.goaltracker.ui.Refreshable;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,7 +12,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
-import lombok.Setter;
 import net.runelite.client.ui.ColorScheme;
 
 public class ListItemPanel<T> extends JPanel implements Refreshable
@@ -26,9 +25,8 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
 
     private final ReorderableList<T> list;
     private final T item;
-
-    @Setter
-    private Runnable runOnReorder;
+    private Consumer<T> reorderedListener;
+    private Consumer<T> removedListener;
 
     public ListItemPanel(ReorderableList<T> list, T item)
     {
@@ -40,28 +38,28 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
         setBackground(ColorScheme.DARK_GRAY_COLOR);
 
         moveUp.addActionListener(e -> {
-            list.move(item, -1);
-            runOnReorder.run();
+            list.moveUp(item);
+            this.reorderedListener.accept(item);
         });
 
         moveDown.addActionListener(e -> {
-            list.move(item, 1);
-            runOnReorder.run();
+            list.moveDown(item);
+            this.reorderedListener.accept(item);
         });
 
         moveToTop.addActionListener(e -> {
             list.moveToTop(item);
-            runOnReorder.run();
+            this.reorderedListener.accept(item);
         });
 
         moveToBottom.addActionListener(e -> {
             list.moveToBottom(item);
-            runOnReorder.run();
+            this.reorderedListener.accept(item);
         });
 
         removeTask.addActionListener(e -> {
             list.remove(item);
-            runOnReorder.run();
+            this.removedListener.accept(item);
         });
 
         popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -139,5 +137,13 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
             }
         });
         return this;
+    }
+
+    public void onRemoved(Consumer<T> removeListener) {
+        this.removedListener = removeListener;
+    }
+
+    public void onReordered(Consumer<T> reorderListener) {
+        this.reorderedListener = reorderListener;
     }
 }

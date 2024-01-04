@@ -1,21 +1,20 @@
 package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.factory.SkillLevelTaskFactory;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.task.SkillLevelTask;
 import com.toofifty.goaltracker.ui.SimpleDocumentListener;
 import com.toofifty.goaltracker.ui.components.ComboBox;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.regex.Pattern;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import net.runelite.api.Skill;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.components.FlatTextField;
 
-public class SkillLevelTaskInput extends TaskInput
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.util.regex.Pattern;
+
+public class SkillLevelTaskInput extends TaskInput<SkillLevelTask>
 {
 
     private FlatTextField levelField;
@@ -53,16 +52,16 @@ public class SkillLevelTaskInput extends TaskInput
     }
 
     @Override
-    protected void onSubmit()
+    protected void submit()
     {
         if (levelField.getText().isEmpty()) {
             return;
         }
 
-        addTask(factory(SkillLevelTaskFactory.class).create(
-            (Skill) skillField.getSelectedItem(),
-            Integer.parseInt(levelField.getText())
-        ));
+        addTask(SkillLevelTask.builder()
+            .skill((Skill) skillField.getSelectedItem())
+            .level(Integer.parseInt(levelField.getText()))
+        .build());
     }
 
     @Override
