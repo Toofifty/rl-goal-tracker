@@ -1,16 +1,17 @@
 package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.factory.QuestTaskFactory;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.task.QuestTask;
 import com.toofifty.goaltracker.ui.components.ComboBox;
-import java.awt.BorderLayout;
+import net.runelite.api.Quest;
+
+import java.awt.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import net.runelite.api.Quest;
 
-public class QuestTaskInput extends TaskInput
+public class QuestTaskInput extends TaskInput<QuestTask>
 {
     private final ComboBox<Quest> questField;
 
@@ -27,11 +28,11 @@ public class QuestTaskInput extends TaskInput
     }
 
     @Override
-    protected void onSubmit()
+    protected void submit()
     {
-        addTask(factory(QuestTaskFactory.class).create(
-            (Quest) questField.getSelectedItem()
-        ));
+        addTask(QuestTask.builder()
+                .quest((Quest) questField.getSelectedItem())
+        .build());
     }
 
     @Override

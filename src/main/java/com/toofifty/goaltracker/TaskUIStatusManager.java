@@ -1,12 +1,15 @@
 package com.toofifty.goaltracker;
 
-import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.Task;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.task.Task;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.inject.Singleton;
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
-import javax.inject.Singleton;
-import javax.swing.SwingUtilities;
 
+@Slf4j
 @Singleton
 public class TaskUIStatusManager
 {
@@ -29,11 +32,10 @@ public class TaskUIStatusManager
             if (taskRefreshers.containsKey(task)) {
                 taskRefreshers.get(task).run();
             } else {
-                System.out.println("Missing task refresher for " + task.hashCode());
+                log.debug("Missing task refresher for " + task.hashCode());
                 for (Task key : taskRefreshers.keySet()) {
-                    System.out.println("Has " + key.hashCode() + ". is same: " + (task.equals(key) ? "ye" : "no"));
+                    log.debug("Has " + key.hashCode() + ". is same: " + (task.equals(key) ? "ye" : "no"));
                 }
-
             }
 //            if (goalRefreshers.containsKey(task.getGoal())) {
 //                goalRefreshers.get(task.getGoal()).run();

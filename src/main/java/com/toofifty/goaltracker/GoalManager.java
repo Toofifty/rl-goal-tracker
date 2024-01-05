@@ -1,121 +1,73 @@
 package com.toofifty.goaltracker;
 
-import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.Task;
-import com.toofifty.goaltracker.goal.TaskType;
-import com.toofifty.goaltracker.goal.factory.GoalFactory;
-import java.util.ArrayList;
-import java.util.List;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.enums.Status;
+import com.toofifty.goaltracker.models.enums.TaskType;
+import com.toofifty.goaltracker.models.task.Task;
+import com.toofifty.goaltracker.utils.ReorderableList;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Singleton
-public class GoalManager implements ReorderableList<Goal>
+public class GoalManager
 {
-    private List<Goal> goals = new ArrayList<>();
-
     @Inject
     private GoalTrackerConfig config;
 
     @Inject
     private GoalSerializer goalSerializer;
 
-    @Inject
-    private GoalFactory goalFactory;
+    @Getter
+    private final ReorderableList<Goal> goals = new ReorderableList<>();
+
+    public Goal createGoal()
+    {
+        Goal goal = Goal.builder().build();
+        goals.add(goal);
+        return goal;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Task> List<T> getTasksByTypeAndAnyStatus(TaskType type, Status ...statuses)
+    {
+        List<T> tasks = new ArrayList<>();
+        for (Goal goal : goals) {
+            tasks.addAll((List<T>) goal.getTasks().stream()
+                .filter((task) -> task.getType() == type && Arrays.stream(statuses).anyMatch((status) -> status == task.getStatus()))
+                .collect(Collectors.toList())
+            );
+        }
+        return tasks;
+    }
+
+    public <T extends Task> List<T> getIncompleteTasksByType(TaskType type) {
+        return this.getTasksByTypeAndAnyStatus(type, Status.NOT_STARTED, Status.IN_PROGRESS);
+    }
 
     public void save()
     {
         config.goalTrackerData(goalSerializer.serialize(goals));
 
-        System.out.println("Saved " + goals.size() + " goals");
-    }
-
-    public Goal createGoal()
-    {
-        Goal goal = goalFactory.create();
-        add(goal);
-        return goal;
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> List<T> getAllIncompleteTasksOfType(TaskType type)
-    {
-        List<T> tasks = new ArrayList<>();
-        for (Goal goal : goals) {
-            for (Task task : goal.getAll()) {
-                if (!task.getResult().isCompleted() && task.getType() == type) {
-                    tasks.add((T) task);
-                }
-            }
-        }
-        return tasks;
-    }
-
-    @Override
-    public List<Goal> getAll()
-    {
-        return goals;
-    }
-
-    @Override
-    public void add(Goal goal)
-    {
-        goals.add(goal);
-        this.save();
-    }
-
-    @Override
-    public void remove(Goal goal)
-    {
-        goals.remove(goal);
-        this.save();
-    }
-
-    @Override
-    public void move(Goal goal, int offset)
-    {
-        int index = goals.indexOf(goal);
-        goals.remove(goal);
-        goals.add(index + offset, goal);
-        this.save();
-    }
-
-    @Override
-    public void moveToTop(Goal goal)
-    {
-        goals.remove(goal);
-        goals.add(0, goal);
-        this.save();
-    }
-
-    @Override
-    public void moveToBottom(Goal goal)
-    {
-        goals.remove(goal);
-        goals.add(goal);
-        this.save();
-    }
-
-    @Override
-    public Boolean isFirst(Goal goal)
-    {
-        return goals.get(0) == goal;
-    }
-
-    @Override
-    public Boolean isLast(Goal goal)
-    {
-        return goals.get(goals.size() - 1) == goal;
+        log.info("Saved " + goals.size() + " goals");
     }
 
     public void load()
     {
         try {
-            goals = goalSerializer.deserialize(config.goalTrackerData());
-        } catch (Exception e) {
-            goals = new ArrayList<>();
-        }
+            this.goals.clear();
+            this.goals.addAll(goalSerializer.deserialize(config.goalTrackerData()));
 
-        System.out.println("Loaded " + goals.size() + " goals");
+            log.info("Loaded " + this.goals.size() + " goals");
+        } catch (Exception e) {
+            log.error("Failed to load goals!");
+        }
     }
 }

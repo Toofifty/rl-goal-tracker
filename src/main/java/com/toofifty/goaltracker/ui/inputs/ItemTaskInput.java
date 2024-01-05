@@ -1,19 +1,10 @@
 package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.factory.ItemTaskFactory;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.task.ItemTask;
 import com.toofifty.goaltracker.ui.SimpleDocumentListener;
 import com.toofifty.goaltracker.ui.components.TextButton;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.regex.Pattern;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.border.EmptyBorder;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemComposition;
 import net.runelite.client.callback.ClientThread;
@@ -21,7 +12,12 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.components.FlatTextField;
 
-public class ItemTaskInput extends TaskInput
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.util.regex.Pattern;
+
+public class ItemTaskInput extends TaskInput<ItemTask>
 {
     private final ItemManager itemManager;
     private final ClientThread clientThread;
@@ -37,9 +33,6 @@ public class ItemTaskInput extends TaskInput
 
     private String quantityFieldValue = "1";
     private ItemComposition selectedItem;
-    private final TextButton clearItemButton = new TextButton("X")
-        .setMainColor(ColorScheme.PROGRESS_ERROR_COLOR)
-        .onClick((e) -> clearSelectedItem());
 
     public ItemTaskInput(GoalTrackerPlugin plugin, Goal goal)
     {
@@ -97,6 +90,9 @@ public class ItemTaskInput extends TaskInput
         selectedItemPanel.setBorder(new EmptyBorder(0, 8, 0, 8));
         selectedItemPanel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
         selectedItemPanel.add(selectedItemLabel, BorderLayout.CENTER);
+        TextButton clearItemButton = new TextButton("X")
+                .setMainColor(ColorScheme.PROGRESS_ERROR_COLOR)
+                .onClick((e) -> clearSelectedItem());
         selectedItemPanel.add(clearItemButton, BorderLayout.EAST);
     }
 
@@ -116,17 +112,17 @@ public class ItemTaskInput extends TaskInput
     }
 
     @Override
-    protected void onSubmit()
+    protected void submit()
     {
         if (selectedItem == null || quantityField.getText().isEmpty()) {
             return;
         }
 
-        addTask(factory(ItemTaskFactory.class).create(
-            selectedItem.getId(),
-            selectedItem.getName(),
-            Integer.parseInt(quantityField.getText())
-        ));
+        this.addTask(ItemTask.builder()
+            .itemId(selectedItem.getId())
+            .itemName(selectedItem.getName())
+            .quantity(Integer.parseInt(quantityField.getText()))
+        .build());
     }
 
     @Override

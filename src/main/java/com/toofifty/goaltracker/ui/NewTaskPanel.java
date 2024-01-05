@@ -1,7 +1,8 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.task.Task;
 import com.toofifty.goaltracker.ui.components.TextButton;
 import com.toofifty.goaltracker.ui.inputs.ItemTaskInput;
 import com.toofifty.goaltracker.ui.inputs.ManualTaskInput;
@@ -11,6 +12,7 @@ import com.toofifty.goaltracker.ui.inputs.SkillXpTaskInput;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.function.Consumer;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import net.runelite.client.ui.ColorScheme;
@@ -22,7 +24,7 @@ public class NewTaskPanel extends JPanel
     private final Goal goal;
 
     private JPanel moreOptionsPanel;
-    private Runnable updater;
+    private Consumer<Task> listener;
 
     NewTaskPanel(GoalTrackerPlugin plugin, Goal goal)
     {
@@ -40,7 +42,7 @@ public class NewTaskPanel extends JPanel
         constraints.gridy = 0;
         constraints.ipady = 8;
 
-        add(new ManualTaskInput(plugin, goal).onUpdate(this::update), constraints);
+        add(new ManualTaskInput(plugin, goal).onSubmit((task) -> this.listener.accept(task)), constraints);
         constraints.gridy++;
 
         moreOptionsButton = new TextButton("+ More options");
@@ -61,11 +63,6 @@ public class NewTaskPanel extends JPanel
 
         createMoreOptionsPanel();
         add(moreOptionsPanel, constraints);
-    }
-
-    private void update()
-    {
-        updater.run();
     }
 
     private void hideMoreOptions()
@@ -97,21 +94,21 @@ public class NewTaskPanel extends JPanel
         moreOptionsPanel.setVisible(false);
         moreOptionsPanel.setBackground(ColorScheme.DARK_GRAY_COLOR);
 
-        moreOptionsPanel.add(new SkillLevelTaskInput(plugin, goal).onUpdate(this::update), constraints);
+        moreOptionsPanel.add(new SkillLevelTaskInput(plugin, goal).onSubmit((task) -> this.listener.accept(task)), constraints);
         constraints.gridy++;
 
-        moreOptionsPanel.add(new SkillXpTaskInput(plugin, goal).onUpdate(this::update), constraints);
+        moreOptionsPanel.add(new SkillXpTaskInput(plugin, goal).onSubmit((task) -> this.listener.accept(task)), constraints);
         constraints.gridy++;
 
-        moreOptionsPanel.add(new QuestTaskInput(plugin, goal).onUpdate(this::update), constraints);
+        moreOptionsPanel.add(new QuestTaskInput(plugin, goal).onSubmit((task) -> this.listener.accept(task)), constraints);
         constraints.gridy++;
 
-        moreOptionsPanel.add(new ItemTaskInput(plugin, goal).onUpdate(this::update), constraints);
+        moreOptionsPanel.add(new ItemTaskInput(plugin, goal).onSubmit((task) -> this.listener.accept(task)), constraints);
         constraints.gridy++;
     }
 
-    public void onUpdate(Runnable updater)
+    public void onTaskAdded(Consumer<Task> listener)
     {
-        this.updater = updater;
+        this.listener = listener;
     }
 }

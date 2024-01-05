@@ -1,34 +1,41 @@
 package com.toofifty.goaltracker.services;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.ItemTask;
-import com.toofifty.goaltracker.goal.ManualTask;
-import com.toofifty.goaltracker.goal.QuestTask;
-import com.toofifty.goaltracker.goal.SkillLevelTask;
-import com.toofifty.goaltracker.goal.SkillXpTask;
-import com.toofifty.goaltracker.goal.Task;
-import java.awt.image.BufferedImage;
-import javax.inject.Inject;
+import com.toofifty.goaltracker.models.task.*;
 import net.runelite.api.Client;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SkillIconManager;
 import net.runelite.client.util.ImageUtil;
-import org.apache.commons.lang3.NotImplementedException;
+
+import javax.inject.Inject;
+import javax.swing.*;
+import java.awt.image.BufferedImage;
 
 public class TaskIconService
 {
-    private static final BufferedImage CROSS_MARK_ICON;
-    private static final BufferedImage QUEST_ICON;
+    public static final ImageIcon CROSS_MARK_ICON;
+    public static final ImageIcon CHECK_MARK_ICON;
+    public static final ImageIcon QUEST_ICON;
+    public static final ImageIcon QUEST_COMPLETE_ICON;
+    public static final ImageIcon UNKNOWN_ICON;
 
     static {
-        CROSS_MARK_ICON = ImageUtil.loadImageResource(
-            GoalTrackerPlugin.class, "/cross_mark.png");
-        QUEST_ICON = ImageUtil.loadImageResource(
-            GoalTrackerPlugin.class, "/quest_icon.png");
+        CROSS_MARK_ICON = new ImageIcon(
+                ImageUtil.loadImageResource(GoalTrackerPlugin.class, "/cross_mark.png")
+        );
+        CHECK_MARK_ICON = new ImageIcon(
+                ImageUtil.loadImageResource(GoalTrackerPlugin.class, "/check_mark.png")
+        );
+        QUEST_ICON = new ImageIcon(
+                ImageUtil.loadImageResource(GoalTrackerPlugin.class, "/quest_icon.png")
+        );
+        QUEST_COMPLETE_ICON = new ImageIcon(
+                ImageUtil.loadImageResource(GoalTrackerPlugin.class, "/quest_complete.png")
+        );
+        UNKNOWN_ICON = new ImageIcon(
+                ImageUtil.loadImageResource(GoalTrackerPlugin.class, "/question_mark.png")
+        );
     }
-
-    @Inject
-    private Client client;
 
     @Inject
     private ItemManager itemManager;
@@ -36,34 +43,38 @@ public class TaskIconService
     @Inject
     private SkillIconManager skillIconManager;
 
-    public BufferedImage get(Task task)
+    @Inject
+    private Client client;
+
+    public ImageIcon get(Task task)
     {
         if (task instanceof ManualTask) {
             return get((ManualTask) task);
-        }
-
-        if (task instanceof SkillLevelTask) {
-            return get((SkillLevelTask) task);
-        }
-
-        if (task instanceof SkillXpTask) {
-            return get((SkillXpTask) task);
         }
 
         if (task instanceof QuestTask) {
             return get((QuestTask) task);
         }
 
-        if (task instanceof ItemTask) {
-            return get((ItemTask) task);
+        BufferedImage image = null;
+        if (task instanceof SkillLevelTask) {
+            image = get((SkillLevelTask) task);
+        } else if (task instanceof SkillXpTask) {
+            image = get((SkillXpTask) task);
+        } else if (task instanceof ItemTask) {
+            image = get((ItemTask) task);
         }
 
-        throw new NotImplementedException("Missing task icon implementation");
+        if (image != null) {
+            return new ImageIcon(image.getScaledInstance(16, 16, 32));
+        }
+
+        return UNKNOWN_ICON;
     }
 
-    public BufferedImage get(ManualTask task)
+    public ImageIcon get(ManualTask task)
     {
-        return CROSS_MARK_ICON;
+        return task.isDone() ? CHECK_MARK_ICON : CROSS_MARK_ICON;
     }
 
     public BufferedImage get(SkillLevelTask task)
@@ -76,14 +87,14 @@ public class TaskIconService
         return skillIconManager.getSkillImage(task.getSkill());
     }
 
-    public BufferedImage get(QuestTask task)
+    public ImageIcon get(QuestTask task)
     {
-        return QUEST_ICON;
+        return task.isDone() ? QUEST_COMPLETE_ICON : QUEST_ICON;
     }
 
     public BufferedImage get(ItemTask task)
     {
-        if (task.getCachedIcon() == null) {
+        if (task.getCachedIcon() == null && client.isClientThread()) {
             task.setCachedIcon(itemManager.getImage(task.getItemId()));
         }
 

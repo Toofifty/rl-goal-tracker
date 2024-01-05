@@ -1,25 +1,23 @@
 package com.toofifty.goaltracker.ui;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import net.runelite.client.ui.ColorScheme;
+import com.toofifty.goaltracker.models.Goal;
+
+import javax.swing.*;
+import java.awt.*;
+
+import static com.toofifty.goaltracker.utils.Constants.STATUS_TO_COLOR;
 
 public class GoalItemContent extends JPanel implements Refreshable
 {
     private final JLabel title = new JLabel();
     private final JLabel progress = new JLabel();
 
-    private final GoalTrackerPlugin plugin;
     private final Goal goal;
 
     GoalItemContent(GoalTrackerPlugin plugin, Goal goal)
     {
         super(new BorderLayout());
-        this.plugin = plugin;
         this.goal = goal;
 
         add(title, BorderLayout.WEST);
@@ -31,13 +29,7 @@ public class GoalItemContent extends JPanel implements Refreshable
     @Override
     public void refresh()
     {
-        Boolean isComplete = goal.isComplete();
-        Boolean isInProgress = goal.isInProgress();
-
-        Color color = isComplete ? ColorScheme.PROGRESS_COMPLETE_COLOR
-            : isInProgress
-                ? ColorScheme.PROGRESS_INPROGRESS_COLOR
-                : ColorScheme.PROGRESS_ERROR_COLOR;
+        Color color = STATUS_TO_COLOR.get(goal.getStatus());
 
         title.setText(goal.getDescription());
         title.setForeground(color);

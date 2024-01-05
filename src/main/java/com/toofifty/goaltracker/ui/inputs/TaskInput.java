@@ -1,13 +1,13 @@
 package com.toofifty.goaltracker.ui.inputs;
 
 import com.toofifty.goaltracker.GoalTrackerPlugin;
-import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.Task;
-import com.toofifty.goaltracker.goal.factory.TaskFactory;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.task.Task;
 import com.toofifty.goaltracker.ui.components.TextButton;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.util.function.Consumer;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -15,15 +15,15 @@ import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 
-public abstract class TaskInput extends JPanel
+public abstract class TaskInput<T extends Task> extends JPanel
 {
     protected final int PREFERRED_INPUT_HEIGHT = 16;
     protected GoalTrackerPlugin plugin;
-    private Goal goal;
+    private final Goal goal;
     @Getter
-    private Runnable updater;
+    private final JPanel inputRow;
     @Getter
-    private JPanel inputRow;
+    private Consumer<T> listener;
 
     TaskInput(GoalTrackerPlugin plugin, Goal goal, String title)
     {
@@ -53,7 +53,7 @@ public abstract class TaskInput extends JPanel
         inputRow.setBackground(ColorScheme.DARKER_GRAY_COLOR);
 
         TextButton addButton = new TextButton("Add");
-        addButton.onClick(e -> onSubmit());
+        addButton.onClick(e -> submit());
 
         inputRow.add(addButton, BorderLayout.EAST);
 
@@ -61,25 +61,20 @@ public abstract class TaskInput extends JPanel
         constraints.gridy++;
     }
 
-    abstract protected void onSubmit();
+    abstract protected void submit();
 
-    protected <T extends TaskFactory<?>> T factory(Class<T> factoryClass)
+    public void addTask(T task)
     {
-        return plugin.getTaskFactoryService().get(factoryClass);
-    }
-
-    public void addTask(Task task)
-    {
-        goal.add(task);
-        updater.run();
-        reset();
+        goal.getTasks().add(task);
+        this.listener.accept(task);
+        this.reset();
     }
 
     abstract protected void reset();
 
-    public TaskInput onUpdate(Runnable updater)
+    public TaskInput<T> onSubmit(Consumer<T> listener)
     {
-        this.updater = updater;
+        this.listener = listener;
         return this;
     }
 }

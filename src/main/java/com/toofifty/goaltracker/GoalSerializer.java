@@ -1,38 +1,52 @@
 package com.toofifty.goaltracker;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.toofifty.goaltracker.goal.Goal;
-import com.toofifty.goaltracker.goal.factory.GoalFactory;
-import java.util.ArrayList;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.toofifty.goaltracker.adapters.QuestAdapter;
+import com.toofifty.goaltracker.adapters.SkillAdapter;
+import com.toofifty.goaltracker.adapters.TaskAdapter;
+import com.toofifty.goaltracker.models.Goal;
+import com.toofifty.goaltracker.models.task.Task;
+import com.toofifty.goaltracker.utils.ReorderableList;
+import net.runelite.api.Quest;
+import net.runelite.api.Skill;
+
 import java.util.List;
-import javax.inject.Inject;
 
 public class GoalSerializer
 {
-    @Inject
-    private GoalFactory goalFactory;
 
-    public List<Goal> deserialize(String serialized) throws Exception
+    public ReorderableList<Goal> deserialize(String serialized)
     {
-        List<Goal> goals = new ArrayList<>();
-        JsonArray json = new JsonParser().parse(serialized).getAsJsonArray();
-
-        for (JsonElement item : json) {
-            JsonObject obj = item.getAsJsonObject();
-            goals.add(goalFactory.create(obj));
-        }
-
-        return goals;
+        return ReorderableList.from(this.getBuilder().fromJson(serialized, Goal[].class));
     }
 
     public String serialize(List<Goal> goals)
     {
-        JsonArray json = new JsonArray();
-        goals.forEach((goal -> json.add(goal.serialize())));
+        return this.serialize(goals, false);
+    }
 
-        return json.toString();
+    public String serialize(List<Goal> goals, boolean prettyPrinting)
+    {
+        return this.getBuilder(prettyPrinting).toJson(goals);
+    }
+
+    private Gson getBuilder() {
+        return this.getBuilder(false);
+    }
+
+    private Gson getBuilder(boolean prettyPrinting) {
+        GsonBuilder builder = new GsonBuilder()
+            .setFieldNamingStrategy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .registerTypeAdapter(Task.class, new TaskAdapter())
+            .registerTypeAdapter(Skill.class, new SkillAdapter())
+            .registerTypeAdapter(Quest.class, new QuestAdapter());
+
+        if (prettyPrinting) {
+            builder.setPrettyPrinting();
+        }
+
+        return builder.create();
     }
 }

@@ -1,35 +1,16 @@
 package com.toofifty.goaltracker;
 
 import com.google.inject.Provides;
-import com.toofifty.goaltracker.goal.ItemTask;
-import com.toofifty.goaltracker.goal.QuestTask;
-import com.toofifty.goaltracker.goal.SkillLevelTask;
-import com.toofifty.goaltracker.goal.SkillXpTask;
-import com.toofifty.goaltracker.goal.Task;
-import com.toofifty.goaltracker.goal.TaskType;
-import com.toofifty.goaltracker.services.TaskCheckerService;
-import com.toofifty.goaltracker.services.TaskFactoryService;
+import com.toofifty.goaltracker.models.enums.TaskType;
+import com.toofifty.goaltracker.models.task.*;
 import com.toofifty.goaltracker.services.TaskIconService;
+import com.toofifty.goaltracker.services.TaskUpdateService;
 import com.toofifty.goaltracker.ui.GoalTrackerPanel;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import javax.inject.Inject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import net.runelite.api.ChatMessageType;
-import net.runelite.api.Client;
-import net.runelite.api.GameState;
-import net.runelite.api.InventoryID;
-import net.runelite.api.ItemID;
-import net.runelite.api.events.ChatMessage;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.StatChanged;
+import net.runelite.api.*;
+import net.runelite.api.events.*;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatMessageBuilder;
 import net.runelite.client.chat.ChatMessageManager;
@@ -46,6 +27,10 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.AsyncBufferedImage;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.stream.IntStream;
 
 @Slf4j
 @PluginDescriptor(name = "Goal Tracker", description = "Keep track of your goals and complete them automatically")
@@ -95,11 +80,7 @@ public class GoalTrackerPlugin extends Plugin
 
     @Getter
     @Inject
-    private TaskFactoryService taskFactoryService;
-
-    @Getter
-    @Inject
-    private TaskCheckerService taskCheckerService;
+    private TaskUpdateService taskUpdateService;
 
     @Getter
     @Inject
@@ -140,6 +121,20 @@ public class GoalTrackerPlugin extends Plugin
 
             clientToolbar.addNavigation(uiNavigationButton);
         });
+
+        goalTrackerPanel.onGoalUpdated((goal) -> goalManager.save());
+        goalTrackerPanel.onTaskAdded((task) -> {
+            if (taskUpdateService.update(task)) {
+                if (task.getStatus().isCompleted()) {
+                    notifyTask(task);
+                }
+
+                uiStatusManager.refresh(task);
+            }
+
+            goalManager.save();
+        });
+        goalTrackerPanel.onTaskUpdated((task) -> goalManager.save());
     }
 
     @Override
@@ -157,34 +152,38 @@ public class GoalTrackerPlugin extends Plugin
     @Subscribe
     public void onStatChanged(StatChanged event)
     {
-        List<SkillLevelTask> skillLevelTasks = goalManager.getAllIncompleteTasksOfType(TaskType.SKILL_LEVEL);
+        List<SkillLevelTask> skillLevelTasks = goalManager.getIncompleteTasksByType(TaskType.SKILL_LEVEL);
         for (SkillLevelTask task : skillLevelTasks) {
-            if (event.getSkill() == task.getSkill() && event.getLevel() >= task.getLevel()) {
+            if (!taskUpdateService.update(task, event)) continue;
+
+            if (task.getStatus().isCompleted()) {
                 notifyTask(task);
-                uiStatusManager.refresh(task);
-                this.goalManager.save();
             }
+
+            uiStatusManager.refresh(task);
+            this.goalManager.save();
         }
 
-        List<SkillXpTask> skillXpTasks = goalManager.getAllIncompleteTasksOfType(TaskType.SKILL_XP);
+        List<SkillXpTask> skillXpTasks = goalManager.getIncompleteTasksByType(TaskType.SKILL_XP);
         for (SkillXpTask task : skillXpTasks) {
-            if (event.getSkill() == task.getSkill() && event.getXp() >= task.getXp()) {
+            if (!taskUpdateService.update(task, event)) continue;
+
+            if (task.getStatus().isCompleted()) {
                 notifyTask(task);
-                uiStatusManager.refresh(task);
-                this.goalManager.save();
             }
+
+            uiStatusManager.refresh(task);
+            this.goalManager.save();
         }
     }
 
     public void notifyTask(Task task)
     {
-        if (client.getGameState() != GameState.LOGGED_IN || task.hasBeenNotified()) {
-            return;
-        }
+        if (client.getGameState() != GameState.LOGGED_IN || task.isNotified()) return;
 
-        log.debug("Notify: " + "[Goal Tracker] You have completed a task: " + task.toString() + "!");
+        log.debug("Notify: [Goal Tracker] You have completed a task: " + task + "!");
 
-        String message = "[Goal Tracker] You have completed a task: " + task.toString() + "!";
+        String message = "[Goal Tracker] You have completed a task: " + task + "!";
         String formattedMessage = new ChatMessageBuilder().append(ColorScheme.PROGRESS_COMPLETE_COLOR, message).build();
         chatMessageManager.queue(QueuedMessage.builder()
             .type(ChatMessageType.CONSOLE)
@@ -192,7 +191,7 @@ public class GoalTrackerPlugin extends Plugin
             .runeLiteFormattedMessage(formattedMessage)
             .build());
 
-        task.hasBeenNotified(true);
+        task.setNotified(true);
     }
 
     @Subscribe
@@ -226,15 +225,18 @@ public class GoalTrackerPlugin extends Plugin
     @Subscribe
     public void onChatMessage(ChatMessage event)
     {
-        if (event.getType() == ChatMessageType.GAMEMESSAGE && event.getMessage().contains("Quest complete")) {
-            List<QuestTask> questTasks = goalManager.getAllIncompleteTasksOfType(TaskType.QUEST);
-            for (QuestTask task : questTasks) {
-                if (taskCheckerService.check(task).isCompleted()) {
-                    notifyTask(task);
-                    uiStatusManager.refresh(task);
-                    this.goalManager.save();
-                }
+        if (event.getType() != ChatMessageType.GAMEMESSAGE || !event.getMessage().contains("Quest complete")) return;
+
+        List<QuestTask> questTasks = goalManager.getIncompleteTasksByType(TaskType.QUEST);
+        for (QuestTask task : questTasks) {
+            if (!taskUpdateService.update(task)) continue;
+
+            if (task.getStatus().isCompleted()) {
+                notifyTask(task);
             }
+
+            uiStatusManager.refresh(task);
+            this.goalManager.save();
         }
     }
 
@@ -245,20 +247,18 @@ public class GoalTrackerPlugin extends Plugin
 
         itemCache.update(event.getContainerId(), event.getItemContainer().getItems());
 
-        List<ItemTask> itemTasks = goalManager.getAllIncompleteTasksOfType(TaskType.ITEM);
+        List<ItemTask> itemTasks = goalManager.getIncompleteTasksByType(TaskType.ITEM);
         for (ItemTask task : itemTasks) {
-            if (task.getResult().isCompleted()) {
-                continue;
-            }
+            if (!taskUpdateService.update(task)) continue;
 
-            if (taskCheckerService.check(task).isCompleted()) {
+            if (task.getStatus().isCompleted()) {
                 notifyTask(task);
-                this.goalManager.save();
             }
 
             // always refresh item tasks, since the acquired
             // count could have changed
             uiStatusManager.refresh(task);
+            this.goalManager.save();
         }
     }
 

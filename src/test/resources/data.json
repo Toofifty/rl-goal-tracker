@@ -1,0 +1,14 @@
+[
+  {
+    "description": "My Goal",
+    "display_order": -1,
+    "items": [
+      {
+        "description": "Do all the things!",
+        "previous_result": "completed",
+        "has_been_notified": true,
+        "type": "manual"
+      }
+    ]
+  }
+]
