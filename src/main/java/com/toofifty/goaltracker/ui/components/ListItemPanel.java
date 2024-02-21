@@ -21,12 +21,17 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
     private final JMenuItem moveToTop = new JMenuItem("Move to top");
     private final JMenuItem moveToBottom = new JMenuItem("Move to bottom");
     private final JMenuItem removeTask = new JMenuItem("Remove");
+    private final JMenuItem indentTask = new JMenuItem("Indent");
+    private final JMenuItem unindentTask = new JMenuItem("Unindent");
     private final JPopupMenu popupMenu = new JPopupMenu();
 
     private final ReorderableList<T> list;
     private final T item;
+
     private Consumer<T> reorderedListener;
     private Consumer<T> removedListener;
+    private Consumer<T> indentedListener;
+    private Consumer<T> unindentedListener;
 
     public ListItemPanel(ReorderableList<T> list, T item)
     {
@@ -62,6 +67,16 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
             this.removedListener.accept(item);
         });
 
+
+
+        indentTask.addActionListener(e -> {
+            this.indentedListener.accept(item);
+        });
+
+        unindentTask.addActionListener(e -> {
+            this.unindentedListener.accept(item);
+        });
+
         popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         setComponentPopupMenu(popupMenu);
@@ -93,6 +108,14 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
         popupMenu.removeAll();
         if (!list.isFirst(item)) {
             popupMenu.add(moveUp);
+            if (this.indentedListener != null)
+            {
+                popupMenu.add(indentTask);
+            }
+            if (this.unindentedListener != null)
+            {
+                popupMenu.add(unindentTask);
+            }
         }
         if (!list.isLast(item)) {
             popupMenu.add(moveDown);
@@ -145,5 +168,14 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
 
     public void onReordered(Consumer<T> reorderListener) {
         this.reorderedListener = reorderListener;
+    }
+
+    public void onIndented(Consumer<T> indentedListener) {
+        this.indentedListener = indentedListener;
+    }
+
+    public void onUnindented(Consumer<T> unindentedListener) {
+        this.unindentedListener = unindentedListener;
+
     }
 }
