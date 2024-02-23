@@ -42,7 +42,10 @@ public class TaskItemContent extends JPanel implements Refreshable
     {
         titleLabel.setText(task.toString());
         titleLabel.setForeground(STATUS_TO_COLOR.get(task.getStatus()));
+
+        int indent = 16 * task.getIndentLevel();
         iconLabel.setIcon(iconService.get(task));
+        iconLabel.setBorder(new EmptyBorder(0, indent, 0, 0));
 
         revalidate();
     }

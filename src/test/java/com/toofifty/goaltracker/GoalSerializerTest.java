@@ -41,6 +41,7 @@ public class GoalSerializerTest {
         assertEquals(Status.COMPLETED, task.getStatus());
         assertTrue(task.isNotified());
         assertTrue(task.isDone());
+        assertEquals(0, task.getIndentLevel());
         assertEquals("Do all the things!", task.getDescription());
     }
 
@@ -57,12 +58,15 @@ public class GoalSerializerTest {
         assertEquals(5, goals.get(0).getTasks().size());
 
         assertEquals(ManualTask.class, goals.get(0).getTasks().get(0).getClass());
+        assertEquals(0, goals.get(0).getTasks().get(0).getIndentLevel());
         assertEquals(SkillLevelTask.class, goals.get(0).getTasks().get(1).getClass());
+        assertEquals(1, goals.get(0).getTasks().get(1).getIndentLevel());
 
         SkillLevelTask skillLevelTask = (SkillLevelTask) goals.get(0).getTasks().get(1);
 
         assertEquals(99, skillLevelTask.getLevel());
         assertEquals(Skill.ATTACK, skillLevelTask.getSkill());
+        assertEquals(1, skillLevelTask.getIndentLevel());
 
         assertEquals(SkillXpTask.class, goals.get(0).getTasks().get(2).getClass());
 
@@ -70,12 +74,14 @@ public class GoalSerializerTest {
 
         assertEquals(1234, skillXpTask.getXp());
         assertEquals(Skill.ATTACK, skillXpTask.getSkill());
+        assertEquals(2, skillXpTask.getIndentLevel());
 
         assertEquals(QuestTask.class, goals.get(0).getTasks().get(3).getClass());
 
         QuestTask questTask = (QuestTask) goals.get(0).getTasks().get(3);
 
         assertEquals(Quest.ANIMAL_MAGNETISM, questTask.getQuest());
+        assertEquals(1, questTask.getIndentLevel());
 
         assertEquals(ItemTask.class, goals.get(0).getTasks().get(4).getClass());
 
@@ -85,6 +91,7 @@ public class GoalSerializerTest {
         assertEquals(4, itemTask.getAcquired());
         assertEquals(10, itemTask.getQuantity());
         assertEquals("Feather", itemTask.getItemName());
+        assertEquals(0, itemTask.getIndentLevel());
     }
 
     @Test
@@ -100,11 +107,13 @@ public class GoalSerializerTest {
                         .description("Do all the things!")
                         .status(Status.COMPLETED)
                         .notified(true)
+                        .indentLevel(0)
                         .build())))
                 .build()
         );
 
         assertEquals(expectedJson, serializer.serialize(goals, true));
+        
     }
 
     @Test
@@ -120,27 +129,32 @@ public class GoalSerializerTest {
                                         .description("Do all the things!")
                                         .status(Status.COMPLETED)
                                         .notified(true)
+                                        .indentLevel(0)
                                         .build(),
                                 SkillLevelTask.builder()
                                         .status(Status.IN_PROGRESS)
                                         .notified(false)
+                                        .indentLevel(1)
                                         .level(99)
                                         .skill(Skill.ATTACK)
                                         .build(),
                                 SkillXpTask.builder()
                                         .status(Status.NOT_STARTED)
                                         .notified(false)
+                                        .indentLevel(2)
                                         .xp(1234)
                                         .skill(Skill.ATTACK)
                                         .build(),
                                 QuestTask.builder()
                                         .status(Status.NOT_STARTED)
                                         .notified(false)
+                                        .indentLevel(1)
                                         .quest(Quest.ANIMAL_MAGNETISM)
                                         .build(),
                                 ItemTask.builder()
                                         .status(Status.NOT_STARTED)
                                         .notified(false)
+                                        .indentLevel(0)
                                         .quantity(10)
                                         .acquired(4)
                                         .itemId(314)

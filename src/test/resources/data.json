@@ -7,6 +7,7 @@
         "description": "Do all the things!",
         "previous_result": "completed",
         "has_been_notified": true,
+        "indent_level": 0,
         "type": "manual"
       }
     ]

@@ -69,6 +69,18 @@ public class GoalPanel extends JPanel implements Refreshable
                 });
             }
 
+            taskPanel.onIndented(e -> {
+                task.indent();
+                this.taskUpdatedListener.accept(task);
+                plugin.getUiStatusManager().refresh(task);
+            });
+
+            taskPanel.onUnindented(e -> {
+                task.unindent();
+                this.taskUpdatedListener.accept(task);
+                plugin.getUiStatusManager().refresh(task);
+            });
+
             return taskPanel;
         });
         taskListPanel.setGap(0);
