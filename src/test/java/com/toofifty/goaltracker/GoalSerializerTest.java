@@ -18,12 +18,13 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+//noinspection UnstableApiUsage
+@SuppressWarnings("null")
 public class GoalSerializerTest {
     GoalSerializer serializer = new GoalSerializer();
 
     @Test
     public void deserialize_should_parse_successfully() throws IOException {
-        //noinspection UnstableApiUsage
         String json = Resources.toString(Resources.getResource("data.json"), Charset.defaultCharset());
 
         List<Goal> goals = serializer.deserialize(json);
@@ -47,7 +48,6 @@ public class GoalSerializerTest {
 
     @Test
     public void deserialize_should_support_other_task_types() throws IOException {
-        //noinspection UnstableApiUsage
         String json = Resources.toString(Resources.getResource("complex.json"), Charset.defaultCharset());
 
         List<Goal> goals = serializer.deserialize(json);

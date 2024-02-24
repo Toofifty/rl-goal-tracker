@@ -96,7 +96,7 @@ public class ItemTaskInput extends TaskInput<ItemTask>
         selectedItemPanel.add(clearItemButton, BorderLayout.EAST);
     }
 
-    private void setSelectedItem(int rawId)
+    private void setSelectedItem(Integer rawId)
     {
         clientThread.invokeLater(() -> {
             int id = itemManager.canonicalize(rawId);

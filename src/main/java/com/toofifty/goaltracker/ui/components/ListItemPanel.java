@@ -16,22 +16,18 @@ import net.runelite.client.ui.ColorScheme;
 
 public class ListItemPanel<T> extends JPanel implements Refreshable
 {
-    private final JMenuItem moveUp = new JMenuItem("Move up");
-    private final JMenuItem moveDown = new JMenuItem("Move down");
-    private final JMenuItem moveToTop = new JMenuItem("Move to top");
-    private final JMenuItem moveToBottom = new JMenuItem("Move to bottom");
-    private final JMenuItem removeTask = new JMenuItem("Remove");
-    private final JMenuItem indentTask = new JMenuItem("Indent");
-    private final JMenuItem unindentTask = new JMenuItem("Unindent");
-    private final JPopupMenu popupMenu = new JPopupMenu();
+    protected final JMenuItem moveUp = new JMenuItem("Move up");
+    protected final JMenuItem moveDown = new JMenuItem("Move down");
+    protected final JMenuItem moveToTop = new JMenuItem("Move to top");
+    protected final JMenuItem moveToBottom = new JMenuItem("Move to bottom");
+    protected final JMenuItem removeItem = new JMenuItem("Remove");
+    protected final JPopupMenu popupMenu = new JPopupMenu();
 
-    private final ReorderableList<T> list;
-    private final T item;
+    protected final ReorderableList<T> list;
+    protected final T item;
 
-    private Consumer<T> reorderedListener;
-    private Consumer<T> removedListener;
-    private Consumer<T> indentedListener;
-    private Consumer<T> unindentedListener;
+    protected Consumer<T> reorderedListener;
+    protected Consumer<T> removedListener;
 
     public ListItemPanel(ReorderableList<T> list, T item)
     {
@@ -62,19 +58,9 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
             this.reorderedListener.accept(item);
         });
 
-        removeTask.addActionListener(e -> {
+        removeItem.addActionListener(e -> {
             list.remove(item);
             this.removedListener.accept(item);
-        });
-
-
-
-        indentTask.addActionListener(e -> {
-            this.indentedListener.accept(item);
-        });
-
-        unindentTask.addActionListener(e -> {
-            this.unindentedListener.accept(item);
         });
 
         popupMenu.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -108,14 +94,6 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
         popupMenu.removeAll();
         if (!list.isFirst(item)) {
             popupMenu.add(moveUp);
-            if (this.indentedListener != null)
-            {
-                popupMenu.add(indentTask);
-            }
-            if (this.unindentedListener != null)
-            {
-                popupMenu.add(unindentTask);
-            }
         }
         if (!list.isLast(item)) {
             popupMenu.add(moveDown);
@@ -126,7 +104,7 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
         if (!list.isLast(item)) {
             popupMenu.add(moveToBottom);
         }
-        popupMenu.add(removeTask);
+        popupMenu.add(removeItem);
     }
 
     public ListItemPanel<T> add(Component comp)
@@ -135,7 +113,7 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
         return this;
     }
 
-    public ListItemPanel<T> onClick(Consumer<MouseEvent> clickListener)
+    public void onClick(Consumer<MouseEvent> clickListener)
     {
         addMouseListener(new MouseAdapter()
         {
@@ -159,7 +137,6 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
                 setBackground(ColorScheme.DARK_GRAY_COLOR);
             }
         });
-        return this;
     }
 
     public void onRemoved(Consumer<T> removeListener) {
@@ -168,14 +145,5 @@ public class ListItemPanel<T> extends JPanel implements Refreshable
 
     public void onReordered(Consumer<T> reorderListener) {
         this.reorderedListener = reorderListener;
-    }
-
-    public void onIndented(Consumer<T> indentedListener) {
-        this.indentedListener = indentedListener;
-    }
-
-    public void onUnindented(Consumer<T> unindentedListener) {
-        this.unindentedListener = unindentedListener;
-
     }
 }

@@ -6,8 +6,8 @@ import com.toofifty.goaltracker.models.enums.TaskType;
 import com.toofifty.goaltracker.models.task.ManualTask;
 import com.toofifty.goaltracker.models.task.Task;
 import com.toofifty.goaltracker.ui.components.EditableInput;
-import com.toofifty.goaltracker.ui.components.ListItemPanel;
 import com.toofifty.goaltracker.ui.components.ListPanel;
+import com.toofifty.goaltracker.ui.components.ListTaskPanel;
 import com.toofifty.goaltracker.ui.components.TextButton;
 import java.awt.BorderLayout;
 import java.util.Objects;
@@ -50,7 +50,7 @@ public class GoalPanel extends JPanel implements Refreshable
         headerPanel.add(descriptionInput, BorderLayout.CENTER);
 
         taskListPanel = new ListPanel<>(goal.getTasks(), (task) -> {
-            ListItemPanel<Task> taskPanel = new ListItemPanel<>(goal.getTasks(), task);
+            ListTaskPanel taskPanel = new ListTaskPanel(goal.getTasks(), task);
             taskPanel.add(new TaskItemContent(plugin, task));
             taskPanel.setBorder(new EmptyBorder(2, 4, 2, 4));
 
@@ -70,15 +70,15 @@ public class GoalPanel extends JPanel implements Refreshable
             }
 
             taskPanel.onIndented(e -> {
-                task.indent();
-                this.taskUpdatedListener.accept(task);
-                plugin.getUiStatusManager().refresh(task);
+                this.goalUpdatedListener.accept(goal);
+                plugin.getUiStatusManager().refresh(goal);
+                this.refresh();
             });
 
             taskPanel.onUnindented(e -> {
-                task.unindent();
-                this.taskUpdatedListener.accept(task);
-                plugin.getUiStatusManager().refresh(task);
+                this.goalUpdatedListener.accept(goal);
+                plugin.getUiStatusManager().refresh(goal);
+                this.refresh();
             });
 
             return taskPanel;

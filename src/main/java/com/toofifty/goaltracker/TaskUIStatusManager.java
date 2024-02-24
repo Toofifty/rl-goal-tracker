@@ -37,12 +37,17 @@ public class TaskUIStatusManager
                     log.debug("Has " + key.hashCode() + ". is same: " + (task.equals(key) ? "ye" : "no"));
                 }
             }
-//            if (goalRefreshers.containsKey(task.getGoal())) {
-//                goalRefreshers.get(task.getGoal()).run();
-//            } else {
-//                System.out.println(
-//                    "Missing goal refresher for " + task.toString());
-//            }
+        });
+    }
+
+    public void refresh(Goal goal)
+    {
+        SwingUtilities.invokeLater(() -> {
+            if (goalRefreshers.containsKey(goal)) {
+                goalRefreshers.get(goal).run();
+            } else {
+                log.debug("Missing goal refresher for " + goal.hashCode());
+            }
         });
     }
 }

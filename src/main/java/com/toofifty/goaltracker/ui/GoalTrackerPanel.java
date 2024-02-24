@@ -64,8 +64,14 @@ public class GoalTrackerPanel extends PluginPanel implements Refreshable
         titlePanel.add(title, BorderLayout.WEST);
 
         goalListPanel = new ListPanel<>(goalManager.getGoals(),
-            (goal) -> new ListItemPanel<>(goalManager.getGoals(), goal).onClick(e -> this.view(goal))
-                .add(new GoalItemContent(plugin, goal))
+            (goal) -> {
+                var panel = new ListItemPanel<>(goalManager.getGoals(), goal);
+
+                panel.onClick(e -> this.view(goal));
+                panel.add(new GoalItemContent(plugin, goal));
+
+                return panel;
+            }
         );
         goalListPanel.setGap(0);
         goalListPanel.setPlaceholder("Add a new goal using the button above");
