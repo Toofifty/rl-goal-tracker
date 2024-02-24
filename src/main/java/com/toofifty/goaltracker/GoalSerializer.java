@@ -2,7 +2,6 @@ package com.toofifty.goaltracker;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.toofifty.goaltracker.adapters.QuestAdapter;
 import com.toofifty.goaltracker.adapters.SkillAdapter;
 import com.toofifty.goaltracker.adapters.TaskAdapter;
@@ -14,8 +13,12 @@ import net.runelite.api.Skill;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class GoalSerializer
-{
+{	
+    @Inject
+	private Gson gson;
 
     public ReorderableList<Goal> deserialize(String serialized)
     {
@@ -37,7 +40,7 @@ public class GoalSerializer
     }
 
     private Gson getBuilder(boolean prettyPrinting) {
-        GsonBuilder builder = new GsonBuilder()
+        var builder = gson.newBuilder()
             .setFieldNamingStrategy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .registerTypeAdapter(Task.class, new TaskAdapter())
             .registerTypeAdapter(Skill.class, new SkillAdapter())
