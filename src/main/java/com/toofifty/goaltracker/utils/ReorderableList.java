@@ -43,6 +43,17 @@ public class ReorderableList<T> extends ArrayList<T>
         return !this.isEmpty() && this.get(this.size() - 1) == item;
     }
 
+    public T getPreviousItem(T item)
+    {
+        return this.getPreviousItem(this.indexOf(item));
+    }
+
+    public T getPreviousItem(int index)
+    {
+        if (index <= 0) return null;
+        else return this.get(index - 1);
+    }
+
     public static <T> ReorderableList<T> from(List<T> items) {
         ReorderableList<T> list = new ReorderableList<>();
         list.addAll(items);

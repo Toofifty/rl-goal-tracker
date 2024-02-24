@@ -3,7 +3,6 @@ package com.toofifty.goaltracker.ui;
 import com.toofifty.goaltracker.GoalTrackerPlugin;
 import com.toofifty.goaltracker.models.task.Task;
 import com.toofifty.goaltracker.services.TaskIconService;
-import com.toofifty.goaltracker.services.TaskUpdateService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -15,7 +14,6 @@ public class TaskItemContent extends JPanel implements Refreshable
 {
     private final Task task;
     private final TaskIconService iconService;
-    private final TaskUpdateService checkerService;
     private final JLabel titleLabel = new JLabel();
     private final JLabel iconLabel = new JLabel();
 
@@ -24,7 +22,6 @@ public class TaskItemContent extends JPanel implements Refreshable
         super(new BorderLayout());
         this.task = task;
         iconService = plugin.getTaskIconService();
-        checkerService = plugin.getTaskUpdateService();
 
         titleLabel.setPreferredSize(new Dimension(0, 24));
         add(titleLabel, BorderLayout.CENTER);

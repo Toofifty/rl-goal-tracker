@@ -1,6 +1,5 @@
 package com.toofifty.goaltracker.utils;
 
-import com.toofifty.goaltracker.utils.ReorderableList;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -115,6 +114,19 @@ class ReorderableListTest {
         list.add("RuneScape");
 
         assertFalse(list.isLast("Welcome"));
+    }
+
+    @Test
+    void getPreviousItem_shouldReturnPriorItem() {
+        String expectedItem = "to";
+        String item = "RuneScape";
+        ReorderableList<String> list = new ReorderableList<>();
+
+        list.add("Welcome");
+        list.add(expectedItem);
+        list.add(item);
+
+        assertEquals(list.getPreviousItem(item), expectedItem);
     }
 
     @Test

@@ -23,9 +23,8 @@ public class TaskUpdateService
             case SKILL_XP: return this.update((SkillXpTask) task);
             case QUEST: return this.update((QuestTask) task);
             case ITEM: return this.update((ItemTask) task);
+            default: return false;
         }
-
-        return false;
     }
 
     /**
