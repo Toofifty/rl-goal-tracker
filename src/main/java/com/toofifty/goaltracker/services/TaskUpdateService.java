@@ -57,6 +57,9 @@ public class TaskUpdateService
     public boolean update(SkillLevelTask task, int level)
     {
         Status oldStatus = task.getStatus();
+        int oldCurrent = task.getCurrent();
+
+        task.setCurrent(Math.min(level, task.getLevel()));
 
         task.setStatus(
                 level >= task.getLevel()
@@ -64,7 +67,7 @@ public class TaskUpdateService
                         : Status.NOT_STARTED
         );
 
-        return oldStatus != task.getStatus();
+        return oldStatus != task.getStatus() || oldCurrent != task.getCurrent();
     }
 
     /**
@@ -97,6 +100,9 @@ public class TaskUpdateService
     public boolean update(SkillXpTask task, int xp)
     {
         Status oldStatus = task.getStatus();
+        int oldCurrent = task.getCurrent();
+
+        task.setCurrent(Math.min(xp, task.getXp()));
 
         task.setStatus(
                 xp >= task.getXp()
@@ -104,7 +110,7 @@ public class TaskUpdateService
                     : Status.NOT_STARTED
         );
 
-        return oldStatus != task.getStatus();
+        return oldStatus != task.getStatus() || oldCurrent != task.getCurrent();
     }
 
     /**

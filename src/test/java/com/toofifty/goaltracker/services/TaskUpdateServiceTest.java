@@ -100,9 +100,19 @@ class TaskUpdateServiceTest {
     }
 
     @Test
-    void update_skillLevelTask_shouldReturnFalseIfThePlayerLevelDoesNotExceedTheGoal() {
+    void update_skillLevelTask_shouldReturnTrueIfThePlayerLevelHasChanged() {
         SkillLevelTask task = SkillLevelTask.builder().skill(Skill.ATTACK).level(99).build();
 
+        assertTrue(service.update(task, 90));
+        assertTrue(service.update(task, 91));
+        assertEquals(Status.NOT_STARTED, task.getStatus());
+    }
+
+    @Test
+    void update_skillLevelTask_shouldReturnFalseIfThePlayerLevelHasNotChanged() {
+        SkillLevelTask task = SkillLevelTask.builder().skill(Skill.ATTACK).level(99).build();
+
+        assertTrue(service.update(task, 90));
         assertFalse(service.update(task, 90));
         assertEquals(Status.NOT_STARTED, task.getStatus());
     }
@@ -156,10 +166,20 @@ class TaskUpdateServiceTest {
     }
 
     @Test
-    void update_skillXPTask_shouldReturnFalseIfThePlayerXPDoesNotExceedTheGoal() {
+    void update_skillXPTask_shouldReturnFalseIfThePlayerXPHasNotChanged() {
         SkillXpTask task = SkillXpTask.builder().skill(Skill.ATTACK).xp(1234).build();
 
+        assertTrue(service.update(task, 1233));
         assertFalse(service.update(task, 1233));
+        assertEquals(Status.NOT_STARTED, task.getStatus());
+    }
+
+    @Test
+    void update_skillXPTask_shouldReturnTrueIfThePlayerXPHasChanged() {
+        SkillXpTask task = SkillXpTask.builder().skill(Skill.ATTACK).xp(1234).build();
+
+        assertTrue(service.update(task, 1230));
+        assertTrue(service.update(task, 1233));
         assertEquals(Status.NOT_STARTED, task.getStatus());
     }
 
