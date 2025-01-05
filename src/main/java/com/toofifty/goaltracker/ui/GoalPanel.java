@@ -81,6 +81,12 @@ public class GoalPanel extends JPanel implements Refreshable
                 this.refresh();
             });
 
+            taskPanel.onReset(e -> {
+                this.goalUpdatedListener.accept(goal);
+                plugin.getUiStatusManager().refresh(goal);
+                this.refresh();
+            });
+
             return taskPanel;
         });
         taskListPanel.setGap(0);

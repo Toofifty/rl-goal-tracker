@@ -9,9 +9,11 @@ public class ListTaskPanel extends ListItemPanel<Task>
 {
     private final JMenuItem indentItem = new JMenuItem("Indent");
     private final JMenuItem unindentItem = new JMenuItem("Unindent");
+    private final JMenuItem resetItem = new JMenuItem("Reset");
 
     private Consumer<Task> indentedListener;
     private Consumer<Task> unindentedListener;
+    private Consumer<Task> resetListener;
 
     public ListTaskPanel(ReorderableList<Task> list, Task item)
     {
@@ -50,6 +52,11 @@ public class ListTaskPanel extends ListItemPanel<Task>
             item.unindent();
             this.unindentedListener.accept(item);
         });
+
+        resetItem.addActionListener(e -> {
+            item.reset();
+            this.resetListener.accept(item);
+        });
     }
 
     @Override
@@ -79,6 +86,10 @@ public class ListTaskPanel extends ListItemPanel<Task>
             popupMenu.add(unindentItem);
         }
 
+        if (item.isDone()) {
+            popupMenu.add(resetItem);
+        }
+
         popupMenu.add(removeItem);
     }
 
@@ -88,5 +99,9 @@ public class ListTaskPanel extends ListItemPanel<Task>
 
     public void onUnindented(Consumer<Task> unindentedListener) {
         this.unindentedListener = unindentedListener;
+    }
+
+    public void onReset(Consumer<Task> resetListener) {
+        this.resetListener = resetListener;
     }
 }

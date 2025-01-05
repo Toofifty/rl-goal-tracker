@@ -41,6 +41,12 @@ public abstract class Task
         indentLevel -= 1;
     }
 
+    public void reset()
+    {
+        status = Status.NOT_STARTED;
+        notified = false;
+    }
+
     public boolean isIndented() {
         return indentLevel > 0;
     }
@@ -56,6 +62,7 @@ public abstract class Task
     public boolean isNotFullyIndented() {
         return !isFullyIndented();
     }
+
 
     @Override
     abstract public String toString();
